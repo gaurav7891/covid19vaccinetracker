@@ -24,3 +24,24 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+project.ext {
+    android_version = '30.0.0'
+    archLifecycleVersion = '2.4.0-alpha01'
+    gson_version = '2.8.6'
+    retrofit_version = '2.6.2'
+    //ok_http3
+    okhttp_logging_interceptor = '3.11.0'
+    //rx_java
+    rxjava_version = '2.2.19'
+    //rx_android
+    rxandroid_version = '2.1.1'
+    //rx_adapter
+    rxadapter_version = '1.0.0'
+    //rx_kotlin
+    rxkotlin_version = '2.4.0'
+    //dagger
+    dagger_version = '2.27'
+    dagger_compiler_version = '2.19'
+    multidex_version = '1.0.3'
+}
