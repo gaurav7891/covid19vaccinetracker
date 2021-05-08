@@ -36,6 +36,7 @@ class HomeActivity : BaseApp() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        title = "Search Vaccine Centers"
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
         setListeners()
         initData()
