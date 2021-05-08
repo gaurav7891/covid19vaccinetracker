@@ -1,5 +1,9 @@
 package com.nativework.covid19vaccinetracker.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Center(
     val address: String?,
     val block_name: String?,
@@ -14,4 +18,4 @@ data class Center(
     val sessions: List<Session>?,
     val state_name: String?,
     val to: String?
-)
+):Parcelable

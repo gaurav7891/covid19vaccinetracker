@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.nativework.covid19vaccinetracker.base.BaseViewModel
 import com.nativework.covid19vaccinetracker.base.SingleLiveEvent
 import com.nativework.covid19vaccinetracker.deps.DaggerInit
+import com.nativework.covid19vaccinetracker.models.Center
 import com.nativework.covid19vaccinetracker.models.GetCalendarByDistrictResponse
 import com.nativework.covid19vaccinetracker.models.locality.District
 import com.nativework.covid19vaccinetracker.models.locality.DistrictList
@@ -19,6 +20,7 @@ class HomeViewModel : BaseViewModel() {
     lateinit var service: NetworkServiceImpl
     private var repository: HomeRepository
     var districtList = SingleLiveEvent<ArrayList<District>>()
+    var centersList = SingleLiveEvent<ArrayList<Center>>()
 
     init {
         DaggerInit.getDeps().inject(this)
@@ -51,6 +53,10 @@ class HomeViewModel : BaseViewModel() {
         return districtList
     }
 
+    fun getCenterListData(): LiveData<ArrayList<Center>> {
+        return centersList
+    }
+
     fun getCalendarByDistrict(districtId: String, date: String) {
         repository.getCalendarByDistrict(
             districtId,
@@ -63,9 +69,9 @@ class HomeViewModel : BaseViewModel() {
 
                 override fun onSuccess(t: GetCalendarByDistrictResponse) {
                     showProgress.value = false
-                   if (t.centers?.size!! > 0 ){
-
-                   }
+                    if (t.centers?.size!! > 0) {
+                        centersList.setValue(t.centers as ArrayList<Center>)
+                    }
                 }
 
                 override fun onError(e: Throwable) {
