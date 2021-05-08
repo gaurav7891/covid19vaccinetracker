@@ -2,6 +2,8 @@ package com.nativework.covid19vaccinetracker.ui
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
@@ -10,6 +12,7 @@ import com.nativework.covid19vaccinetracker.base.BaseApp
 import com.nativework.covid19vaccinetracker.databinding.ActivityHomeBinding
 import com.nativework.covid19vaccinetracker.models.locality.District
 import com.nativework.covid19vaccinetracker.models.locality.StatesList
+import com.nativework.covid19vaccinetracker.ui.appointment.AppointmentFragment
 import com.nativework.covid19vaccinetracker.ui.home.AutocompleteAdapter
 import com.nativework.covid19vaccinetracker.utils.AppUtils
 import java.text.SimpleDateFormat
@@ -114,7 +117,6 @@ class HomeActivity : BaseApp() {
         stateStringList = getStateList()
         adapter = AutocompleteAdapter(this, R.layout.item_layout_textview, stateStringList)
         binding.autoTextState.setAdapter(adapter)
-
         // disable past dates
         val calendar = Calendar.getInstance()
         calendar.apply {
@@ -167,5 +169,22 @@ class HomeActivity : BaseApp() {
         }
         districtStringList = list
         return list
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu,menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when(item.itemId){
+            R.id.menu_searchByPin -> {
+                binding.homeContainer.visibility = View.VISIBLE
+                binding.btnSearch.visibility = View.GONE
+                loadFragment(AppointmentFragment.newInstance(),R.id.home_container)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

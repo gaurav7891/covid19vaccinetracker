@@ -2,8 +2,11 @@ package com.nativework.covid19vaccinetracker.networks
 
 import com.nativework.covid19vaccinetracker.models.*
 import com.nativework.covid19vaccinetracker.models.locality.DistrictList
+import com.nativework.covid19vaccinetracker.models.*
 import io.reactivex.Single
 import retrofit2.http.*
+import retrofit2.http.*
+import java.util.*
 
 /**
  * This interface represents APIs declaration
@@ -27,4 +30,10 @@ interface NetworkService {
         @Query("date") date: String
     ): Single<GetCalendarByDistrictResponse>
 
+    // get Appointment by date and pincode
+    @GET("v2/appointment/sessions/public/calendarByPin")
+    fun getAppointmentByPincodeAndDate(
+        @Query("pincode") pincode:Int,
+        @Query("date")date : String):
+            Single<AppointmentResponse>
 }
