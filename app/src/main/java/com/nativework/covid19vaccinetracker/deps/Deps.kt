@@ -2,6 +2,7 @@ package com.nativework.covid19vaccinetracker.deps
 
 import com.nativework.covid19vaccinetracker.MyApplication
 import com.nativework.covid19vaccinetracker.networks.NetworkModule
+import com.nativework.covid19vaccinetracker.ui.otp.OTPViewModel
 import dagger.Component
 import javax.inject.Singleton
 
@@ -9,4 +10,5 @@ import javax.inject.Singleton
 @Component(modules = [NetworkModule::class])
 interface Deps {
     fun inject(myApplication: MyApplication)
+    fun inject(otpViewModel: OTPViewModel)
 }

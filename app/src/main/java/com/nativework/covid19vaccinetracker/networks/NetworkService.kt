@@ -15,10 +15,10 @@ import retrofit2.http.POST
  */
 interface NetworkService {
 
-    @POST("/v2/auth/public/generateOTP")
+    @POST("v2/auth/public/generateOTP")
     fun generateOTP(@Body request: GenerateOTPRequest): Single<GenerateOTPResponse>
 
-    @POST("/v2/auth/public/confirmOTP")
+    @POST("v2/auth/public/confirmOTP")
     fun confirmOTP(@Body request: ConfirmOTPRequest):Single<ConfirmOTPResponse>
 
 }
