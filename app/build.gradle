@@ -32,7 +32,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "int", "LIMIT", "100"
-            buildConfigField "String", "BASEURL", "\"https://cdn-api.co-vin.in/api\""
+            buildConfigField "String", "BASEURL", "\"https://cdn-api.co-vin.in/api/\""
             buildConfigField "int", "CACHETIME", "432000"
             buildConfigField "int", "READTIMEOUT", "60"
             buildConfigField "int", "CONNECTIONTIMEOUT", "60"

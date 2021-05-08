@@ -1,5 +1,12 @@
 package com.nativework.covid19vaccinetracker.utils
 
+import android.content.Context
+import com.google.gson.Gson
+import com.nativework.covid19vaccinetracker.R
+import com.nativework.covid19vaccinetracker.models.locality.CitiesList
+import com.nativework.covid19vaccinetracker.models.locality.StatesList
+import java.io.IOException
+import java.io.InputStream
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import kotlin.experimental.and
@@ -28,4 +35,25 @@ object AppUtils {
         }
         return hex.toString()
     }
+
+    private fun inputStreamToString(inputStream: InputStream): String? {
+        return try {
+            val bytes = ByteArray(inputStream.available())
+            inputStream.read(bytes, 0, bytes.size)
+            String(bytes)
+        } catch (e: IOException) {
+            null
+        }
+    }
+
+    fun getStatesModelFromJson(id:Int, context: Context): StatesList {
+        val json = inputStreamToString(context.resources.openRawResource(id))
+        return Gson().fromJson(json, StatesList::class.java)
+    }
+
+    fun getCitiesModelFromJson(id:Int, context: Context): CitiesList {
+        val json = inputStreamToString(context.resources.openRawResource(id))
+        return Gson().fromJson(json, CitiesList::class.java)
+    }
+
 }

@@ -1,9 +1,7 @@
 package com.nativework.covid19vaccinetracker.networks
 
-import com.nativework.covid19vaccinetracker.models.ConfirmOTPRequest
-import com.nativework.covid19vaccinetracker.models.ConfirmOTPResponse
-import com.nativework.covid19vaccinetracker.models.GenerateOTPRequest
-import com.nativework.covid19vaccinetracker.models.GenerateOTPResponse
+import com.nativework.covid19vaccinetracker.models.*
+import com.nativework.covid19vaccinetracker.models.locality.DistrictList
 import io.reactivex.Single
 
 /**
@@ -18,6 +16,17 @@ class NetworkServiceImpl(private val mNetworkService: NetworkService) : NetworkS
 
     override fun confirmOTP(request: ConfirmOTPRequest): Single<ConfirmOTPResponse> {
         return mNetworkService.confirmOTP(request)
+    }
+
+    override fun getDistrict(stateId: String): Single<DistrictList> {
+        return mNetworkService.getDistrict(stateId)
+    }
+
+    override fun getCalendarByDistrict(
+        districtID: String,
+        date: String
+    ): Single<GetCalendarByDistrictResponse> {
+        return mNetworkService.getCalendarByDistrict(districtID, date)
     }
 
 

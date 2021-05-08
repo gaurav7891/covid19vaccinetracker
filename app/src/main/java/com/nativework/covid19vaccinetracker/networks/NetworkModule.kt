@@ -43,6 +43,8 @@ class NetworkModule(private var cacheFile: File, private var context: Context) {
         okHttpClient.addInterceptor { chain ->
             val original = chain.request()
             val request = original.newBuilder()
+                .header("User-Agent", "Onwill Android")
+                .header("Accept-Language","en_US")
                 .header("Content-Type", "application/json")
                 .header("Cache-Control", String.format("max-age=%d", BuildConfig.CACHETIME))
                 .build()
