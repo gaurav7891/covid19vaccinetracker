@@ -1,5 +1,6 @@
 package com.nativework.covid19vaccinetracker.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -13,8 +14,10 @@ import com.nativework.covid19vaccinetracker.databinding.ActivityHomeBinding
 import com.nativework.covid19vaccinetracker.models.locality.District
 import com.nativework.covid19vaccinetracker.models.locality.StatesList
 import com.nativework.covid19vaccinetracker.ui.appointment.AppointmentFragment
+import com.nativework.covid19vaccinetracker.ui.center.CenterActivity
 import com.nativework.covid19vaccinetracker.ui.home.AutocompleteAdapter
 import com.nativework.covid19vaccinetracker.utils.AppUtils
+import com.nativework.covid19vaccinetracker.utils.Constants
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -36,6 +39,7 @@ class HomeActivity : BaseApp() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        title = "Search Vaccine Centers"
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
         setListeners()
         initData()
@@ -117,6 +121,7 @@ class HomeActivity : BaseApp() {
         stateStringList = getStateList()
         adapter = AutocompleteAdapter(this, R.layout.item_layout_textview, stateStringList)
         binding.autoTextState.setAdapter(adapter)
+
         // disable past dates
         val calendar = Calendar.getInstance()
         calendar.apply {
@@ -156,6 +161,14 @@ class HomeActivity : BaseApp() {
                 val list = getDistrictNameList(districtList)
                 adapter = AutocompleteAdapter(this, R.layout.item_layout_textview, list)
                 binding.autoTextDistrict.setAdapter(adapter)
+            }
+        })
+
+        viewModel?.getCenterListData()?.observe(this, {
+            if (it.size > 0) {
+                val intent = Intent(this, CenterActivity::class.java)
+                intent.putParcelableArrayListExtra(Constants.INTENT_EXTRA_DATA, it)
+                startActivity(intent)
             }
         })
     }

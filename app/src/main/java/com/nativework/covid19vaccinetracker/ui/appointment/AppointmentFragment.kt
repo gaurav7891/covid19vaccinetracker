@@ -1,15 +1,18 @@
 package com.nativework.covid19vaccinetracker.ui.appointment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModelProvider
 import com.nativework.covid19vaccinetracker.base.BaseFragment
 import com.nativework.covid19vaccinetracker.databinding.FragmentAppointmentBinding
+import com.nativework.covid19vaccinetracker.ui.center.CenterActivity
+import com.nativework.covid19vaccinetracker.utils.Constants
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class AppointmentFragment : BaseFragment() {
@@ -45,11 +48,13 @@ class AppointmentFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setListeners()
         initData()
-        initListeners()
+        setObservers()
     }
 
-    private fun initListeners() {
+    private fun setListeners() {
         binding.calendarView.setOnDateChangeListener { calendarView, year, month, dayOfMonth ->
             val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.ROOT)
             val calendar = Calendar.getInstance()
@@ -60,19 +65,24 @@ class AppointmentFragment : BaseFragment() {
         }
 
         binding.btnSearch.setOnClickListener {
-            if (dateSelected.isNullOrEmpty() && pincode==0) {
+            pincode = getPincode()
+        }
+
+        binding.btnSearch.setOnClickListener {
+            if (dateSelected.isNullOrEmpty() || pincode == 0) {
                 dateSelected = getSelectedDate()
                 pincode = getPincode()
+            }else{
+                pincode = getPincode()
+                dateSelected?.let { it1 -> pincode?.let { it2 -> getAppointment(it2, it1) } }
             }
-            dateSelected?.let { it1 -> pincode?.let { it2 -> getAppointment(it2, it1) } }
+
         }
     }
 
     private fun getAppointment(i: Int, date: String) {
         println("-----  $i  and  $date")
-        //viewModel?.getAppointmentByPincodeAndDate(i, date)
-
-
+        viewModel?.getAppointmentByPincodeAndDate(i, date)
     }
 
     private fun initData(){
@@ -86,11 +96,41 @@ class AppointmentFragment : BaseFragment() {
 
     private fun  getPincode(): Int {
         val pin :String = binding.edtPincode.text.trim().toString()
-        return pin.toInt()
+        if (!pin.isNullOrEmpty()){
+            return pin.toInt()
+        }else{
+            Toast.makeText(context, "Enter pin code", Toast.LENGTH_SHORT).show()
+        }
+        return 0
     }
 
     private fun getSelectedDate(): String? {
         val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.ROOT)
         return sdf.format(Date(binding.calendarView.date))
+    }
+
+    private fun setObservers() {
+
+        viewModel?.showProgress?.observe(this, {
+            if (it) {
+                binding.progressLayout.visibility = View.VISIBLE
+            } else {
+                binding.progressLayout.visibility = View.GONE
+            }
+        })
+
+        viewModel?.errorMessage?.observe(this, {
+            Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+        })
+
+        viewModel?.getCenterListData()?.observe(this, {
+            if (it.size > 0) {
+                val intent = Intent(context, CenterActivity::class.java)
+                intent.putParcelableArrayListExtra(Constants.INTENT_EXTRA_DATA, it)
+                startActivity(intent)
+            } else if (it.size == 0) {
+                Toast.makeText(context, "Empty/No Schedule found", Toast.LENGTH_LONG).show()
+            }
+        })
     }
 }
