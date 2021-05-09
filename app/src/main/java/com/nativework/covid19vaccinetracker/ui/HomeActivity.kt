@@ -3,23 +3,34 @@ package com.nativework.covid19vaccinetracker.ui
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.base.BaseApp
 import com.nativework.covid19vaccinetracker.databinding.ActivityHomeBinding
+import com.nativework.covid19vaccinetracker.models.SavedPreferences
 import com.nativework.covid19vaccinetracker.models.locality.District
 import com.nativework.covid19vaccinetracker.models.locality.StatesList
+import com.nativework.covid19vaccinetracker.ui.appointment.AppointmentFragment
 import com.nativework.covid19vaccinetracker.ui.center.CenterActivity
 import com.nativework.covid19vaccinetracker.ui.home.AutocompleteAdapter
+import com.nativework.covid19vaccinetracker.ui.home.RecentSearchAdapter
 import com.nativework.covid19vaccinetracker.utils.AppUtils
 import com.nativework.covid19vaccinetracker.utils.Constants
+import com.nativework.covid19vaccinetracker.utils.PreferenceConnector
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class HomeActivity : BaseApp() {
+
+class HomeActivity : BaseApp(), RecentSearchAdapter.OnClickListener {
 
     private lateinit var binding: ActivityHomeBinding
     private var viewModel: HomeViewModel? = null
@@ -30,6 +41,8 @@ class HomeActivity : BaseApp() {
     private var districtStringList = ArrayList<String>()
     private var districtId: String? = null
     private var dateSelected: String? = null
+    private var stateId: String? = null
+    private var recentAdapter: RecentSearchAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,9 +70,9 @@ class HomeActivity : BaseApp() {
                     stateId = state.stateId.toString()
                 }
             }
-            Log.d("tag", stateId)
-            if (stateId.isNotEmpty()) {
-                viewModel?.getDistrictList(stateId)
+            Log.d("tag", stateId!!)
+            if (!stateId.isNullOrEmpty()) {
+                viewModel?.getDistrictList(stateId!!)
             }
         }
 
@@ -85,6 +98,7 @@ class HomeActivity : BaseApp() {
             if (dateSelected.isNullOrEmpty()) {
                 dateSelected = getSelectedDate()
             }
+            AppUtils.saveSelectedSearch(this, state, district, dateSelected, districtId, stateId)
             getCentersAvailable(state, district, dateSelected)
         }
 
@@ -119,6 +133,8 @@ class HomeActivity : BaseApp() {
         adapter = AutocompleteAdapter(this, R.layout.item_layout_textview, stateStringList)
         binding.autoTextState.setAdapter(adapter)
 
+        //retrieve saved search pref
+        showSavedSearchPref()
         // disable past dates
         val calendar = Calendar.getInstance()
         calendar.apply {
@@ -126,6 +142,17 @@ class HomeActivity : BaseApp() {
         }
         val date = calendar.time.time
         binding.calendarView.minDate = date
+    }
+
+    private fun showSavedSearchPref() {
+        val jsonString = PreferenceConnector.readString(this, PreferenceConnector.SAVED_PREF, "")
+        val type: Type = object : TypeToken<ArrayList<SavedPreferences>>() {}.type
+        val model = Gson().fromJson<ArrayList<SavedPreferences>>(jsonString, type)
+        if (model != null) {
+            recentAdapter = RecentSearchAdapter(this, model, this)
+            binding.recentSearchRecyclerView.layoutManager = LinearLayoutManager(this)
+            binding.recentSearchRecyclerView.adapter = recentAdapter
+        }
     }
 
     private fun getStateList(): ArrayList<String> {
@@ -179,5 +206,32 @@ class HomeActivity : BaseApp() {
         }
         districtStringList = list
         return list
+    }
+
+    override fun onImageClick(center: SavedPreferences) {
+        center.districtId?.let {
+            center.date?.let { it1 ->
+                viewModel?.getCalendarByDistrict(
+                    it,
+                    it1
+                )
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_searchByPin -> {
+                binding.homeContainer.visibility = View.VISIBLE
+                binding.btnSearch.visibility = View.GONE
+                loadFragment(AppointmentFragment.newInstance(), R.id.home_container)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

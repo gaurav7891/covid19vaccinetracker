@@ -1,3 +1,20 @@
-#ignore all .idea/
-.idea/
-.gradle/
+*.iml
+.gradle
+.idea
+.idea/codeStyles/Project.xml
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/misc.xml
+/.idea/workspace.xml
+/.idea/gradle.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+'.idea'
+
