@@ -6,15 +6,13 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.base.BaseApp
 import com.nativework.covid19vaccinetracker.databinding.ActivityHomeBinding
 import com.nativework.covid19vaccinetracker.models.SavedPreferences
 import com.nativework.covid19vaccinetracker.models.locality.District
 import com.nativework.covid19vaccinetracker.models.locality.StatesList
+import com.nativework.covid19vaccinetracker.ui.appointment.AppointmentFragment
 import com.nativework.covid19vaccinetracker.ui.center.CenterActivity
 import com.nativework.covid19vaccinetracker.ui.home.AutocompleteAdapter
 import com.nativework.covid19vaccinetracker.ui.home.RecentSearchAdapter
@@ -61,6 +59,7 @@ class HomeActivity : BaseApp(), RecentSearchAdapter.OnClickListener {
                 Toast.LENGTH_SHORT
             ).show()
             val itemSelected = adapterView.getItemAtPosition(position)
+            var stateId = ""
             for (state in statesList!!) {
                 if (itemSelected.equals(state.stateName)) {
                     stateId = state.stateId.toString()
@@ -213,5 +212,22 @@ class HomeActivity : BaseApp(), RecentSearchAdapter.OnClickListener {
                 )
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu,menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when(item.itemId){
+            R.id.menu_searchByPin -> {
+                binding.homeContainer.visibility = View.VISIBLE
+                binding.btnSearch.visibility = View.GONE
+                loadFragment(AppointmentFragment.newInstance(),R.id.home_container)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
