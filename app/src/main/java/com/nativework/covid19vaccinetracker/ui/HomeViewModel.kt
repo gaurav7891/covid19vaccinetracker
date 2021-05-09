@@ -14,7 +14,7 @@ import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 import javax.inject.Inject
 
-class HomeViewModel : BaseViewModel() {
+open class HomeViewModel : BaseViewModel() {
 
     @Inject
     lateinit var service: NetworkServiceImpl
