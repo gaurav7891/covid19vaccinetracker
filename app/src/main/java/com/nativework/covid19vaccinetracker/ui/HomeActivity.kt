@@ -3,9 +3,14 @@ package com.nativework.covid19vaccinetracker.ui
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.base.BaseApp
 import com.nativework.covid19vaccinetracker.databinding.ActivityHomeBinding
@@ -215,17 +220,16 @@ class HomeActivity : BaseApp(), RecentSearchAdapter.OnClickListener {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu,menu)
+        menuInflater.inflate(R.menu.main_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        when(item.itemId){
+        when (item.itemId) {
             R.id.menu_searchByPin -> {
                 binding.homeContainer.visibility = View.VISIBLE
                 binding.btnSearch.visibility = View.GONE
-                loadFragment(AppointmentFragment.newInstance(),R.id.home_container)
+                loadFragment(AppointmentFragment.newInstance(), R.id.home_container)
             }
         }
         return super.onOptionsItemSelected(item)
