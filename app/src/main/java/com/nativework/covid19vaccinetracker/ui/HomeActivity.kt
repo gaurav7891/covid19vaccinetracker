@@ -8,6 +8,7 @@ import com.nativework.covid19vaccinetracker.base.BaseApp
 import com.nativework.covid19vaccinetracker.databinding.ActivityHomeBinding
 import com.nativework.covid19vaccinetracker.ui.appointment.AppointmentFragment
 
+
 class HomeActivity : BaseApp() {
 
     private lateinit var binding: ActivityHomeBinding
@@ -19,6 +20,7 @@ class HomeActivity : BaseApp() {
         setContentView(view)
         setToolbarTitle("Search Vaccine Centers")
         loadFragment(HomeFragment(), R.id.home_container)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

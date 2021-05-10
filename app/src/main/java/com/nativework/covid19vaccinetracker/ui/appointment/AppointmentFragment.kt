@@ -2,14 +2,17 @@ package com.nativework.covid19vaccinetracker.ui.appointment
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.base.BaseApp
 import com.nativework.covid19vaccinetracker.base.BaseFragment
 import com.nativework.covid19vaccinetracker.databinding.FragmentAppointmentBinding
-import com.nativework.covid19vaccinetracker.ui.HomeFragment
 import com.nativework.covid19vaccinetracker.ui.center.CenterActivity
 import com.nativework.covid19vaccinetracker.utils.Constants
 import java.text.SimpleDateFormat
@@ -110,19 +113,19 @@ class AppointmentFragment : BaseFragment() {
 
     private fun setObservers() {
 
-        viewModel?.showProgress?.observe(this, {
+        viewModel?.showProgress?.observe(viewLifecycleOwner) {
             if (it) {
                 binding.progressLayout.visibility = View.VISIBLE
             } else {
                 binding.progressLayout.visibility = View.GONE
             }
-        })
+        }
 
-        viewModel?.errorMessage?.observe(this, {
+        viewModel?.errorMessage?.observe(viewLifecycleOwner) {
             Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
-        })
+        }
 
-        viewModel?.getCenterListData()?.observe(this, {
+        viewModel?.getCenterListData()?.observe(viewLifecycleOwner) {
             if (it.size > 0) {
                 val intent = Intent(context, CenterActivity::class.java)
                 intent.putParcelableArrayListExtra(Constants.INTENT_EXTRA_DATA, it)
@@ -130,12 +133,11 @@ class AppointmentFragment : BaseFragment() {
             } else if (it.size == 0) {
                 Toast.makeText(context, "Empty/No Schedule found", Toast.LENGTH_LONG).show()
             }
-        })
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         val menuPin = menu.findItem(R.id.menu_searchByPin)
-        //val menuDistrict = menu.findItem(R.id.menu_searchByDistrict)
         menuPin.isEnabled = false
         return
     }

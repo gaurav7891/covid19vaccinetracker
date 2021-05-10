@@ -6,22 +6,30 @@ import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.base.BaseApp
 import com.nativework.covid19vaccinetracker.base.BaseFragment
 import com.nativework.covid19vaccinetracker.databinding.FragmentHomeBinding
+import com.nativework.covid19vaccinetracker.models.SavedPreferences
 import com.nativework.covid19vaccinetracker.models.locality.District
 import com.nativework.covid19vaccinetracker.models.locality.StatesList
 import com.nativework.covid19vaccinetracker.ui.appointment.AppointmentFragment
 import com.nativework.covid19vaccinetracker.ui.center.CenterActivity
 import com.nativework.covid19vaccinetracker.ui.home.AutocompleteAdapter
+import com.nativework.covid19vaccinetracker.ui.home.RecentSearchAdapter
 import com.nativework.covid19vaccinetracker.utils.AppUtils
 import com.nativework.covid19vaccinetracker.utils.Constants
+import com.nativework.covid19vaccinetracker.utils.PreferenceConnector
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class HomeFragment : BaseFragment() {
+class HomeFragment : BaseFragment(), RecentSearchAdapter.OnClickListener {
 
     private lateinit var binding: FragmentHomeBinding
     private var viewModel: HomeViewModel? = null
@@ -32,10 +40,8 @@ class HomeFragment : BaseFragment() {
     private var districtStringList = ArrayList<String>()
     private var districtId: String? = null
     private var dateSelected: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private var stateId: String? = null
+    private var recentAdapter: RecentSearchAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -102,6 +108,14 @@ class HomeFragment : BaseFragment() {
             if (dateSelected.isNullOrEmpty()) {
                 dateSelected = getSelectedDate()
             }
+            AppUtils.saveSelectedSearch(
+                requireContext(),
+                state,
+                district,
+                dateSelected,
+                districtId,
+                stateId
+            )
             getCentersAvailable(state, district, dateSelected)
         }
 
@@ -137,6 +151,8 @@ class HomeFragment : BaseFragment() {
             AutocompleteAdapter(requireContext(), R.layout.item_layout_textview, stateStringList)
         binding.autoTextState.setAdapter(adapter)
 
+        //retrieve saved search pref
+        showSavedSearchPref()
         // disable past dates
         val calendar = Calendar.getInstance()
         calendar.apply {
@@ -155,37 +171,48 @@ class HomeFragment : BaseFragment() {
         return list
     }
 
+    private fun showSavedSearchPref() {
+        val jsonString =
+            PreferenceConnector.readString(requireContext(), PreferenceConnector.SAVED_PREF, "")
+        val type: Type = object : TypeToken<ArrayList<SavedPreferences>>() {}.type
+        val model = Gson().fromJson<ArrayList<SavedPreferences>>(jsonString, type)
+        if (model != null) {
+            recentAdapter = RecentSearchAdapter(requireContext(), model, this)
+            binding.recentSearchRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+            binding.recentSearchRecyclerView.adapter = recentAdapter
+        }
+    }
 
     private fun setObservers() {
 
-        viewModel?.showProgress?.observe(this, {
+        viewModel?.showProgress?.observe(viewLifecycleOwner) {
             if (it) {
                 binding.progressLayout.visibility = View.VISIBLE
             } else {
                 binding.progressLayout.visibility = View.GONE
             }
-        })
+        }
 
-        viewModel?.errorMessage?.observe(this, {
+        viewModel?.errorMessage?.observe(viewLifecycleOwner) {
             Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
-        })
+        }
 
-        viewModel?.getDistrictListData()?.observe(this, {
+        viewModel?.getDistrictListData()?.observe(viewLifecycleOwner) {
             if (it.size > 0) {
                 districtList = it
                 val list = getDistrictNameList(districtList)
                 adapter = AutocompleteAdapter(requireContext(), R.layout.item_layout_textview, list)
                 binding.autoTextDistrict.setAdapter(adapter)
             }
-        })
+        }
 
-        viewModel?.getCenterListData()?.observe(this, {
+        viewModel?.getCenterListData()?.observe(viewLifecycleOwner) {
             if (it.size > 0) {
                 val intent = Intent(context, CenterActivity::class.java)
                 intent.putParcelableArrayListExtra(Constants.INTENT_EXTRA_DATA, it)
                 startActivity(intent)
             }
-        })
+        }
     }
 
     private fun getDistrictNameList(districtList: java.util.ArrayList<District>?): ArrayList<String> {
@@ -197,6 +224,17 @@ class HomeFragment : BaseFragment() {
         }
         districtStringList = list
         return list
+    }
+
+    override fun onImageClick(center: SavedPreferences) {
+        center.districtId?.let {
+            center.date?.let { it1 ->
+                viewModel?.getCalendarByDistrict(
+                    it,
+                    it1
+                )
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -214,7 +252,6 @@ class HomeFragment : BaseFragment() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        //val menuPin = menu.findItem(R.id.menu_searchByPin)
         val menuDistrict = menu.findItem(R.id.menu_searchByDistrict)
         menuDistrict.isEnabled = false
         return

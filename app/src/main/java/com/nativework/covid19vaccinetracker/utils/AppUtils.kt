@@ -3,6 +3,7 @@ package com.nativework.covid19vaccinetracker.utils
 import android.content.Context
 import com.google.gson.Gson
 import com.nativework.covid19vaccinetracker.R
+import com.nativework.covid19vaccinetracker.models.SavedPreferences
 import com.nativework.covid19vaccinetracker.models.locality.CitiesList
 import com.nativework.covid19vaccinetracker.models.locality.StatesList
 import java.io.IOException
@@ -54,6 +55,20 @@ object AppUtils {
     fun getCitiesModelFromJson(id:Int, context: Context): CitiesList {
         val json = inputStreamToString(context.resources.openRawResource(id))
         return Gson().fromJson(json, CitiesList::class.java)
+    }
+
+    fun saveSelectedSearch(
+        context: Context,
+        state: String,
+        district: String,
+        dateSelected: String?,
+        districtId: String?,
+        stateId: String?
+    ) {
+        val listOfPref = ArrayList<SavedPreferences>()
+        listOfPref.add(SavedPreferences("SearchByDistrict", districtId,district, stateId,state, dateSelected))
+        val json = Gson().toJson(listOfPref)
+        PreferenceConnector.writeString(context, PreferenceConnector.SAVED_PREF, json)
     }
 
 }
