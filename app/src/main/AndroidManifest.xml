@@ -13,8 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Covid19VaccineTracker">
         <activity android:name=".ui.center.CenterActivity"></activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".ui.HomeActivity">
+        <activity android:name=".MainActivity" android:launchMode="singleTask" />
+        <activity android:name=".ui.HomeActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
