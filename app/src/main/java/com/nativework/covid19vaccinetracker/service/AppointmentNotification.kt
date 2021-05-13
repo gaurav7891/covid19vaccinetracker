@@ -1,10 +1,13 @@
 package com.nativework.covid19vaccinetracker.service
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat.from
 import androidx.work.Worker
@@ -12,6 +15,9 @@ import androidx.work.WorkerParameters
 import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.ui.HomeActivity
 import com.nativework.covid19vaccinetracker.utils.Constants
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 class AppointmentNotification(private val context: Context, workerParameters: WorkerParameters) :
     Worker(context, workerParameters) {
@@ -28,6 +34,15 @@ class AppointmentNotification(private val context: Context, workerParameters: Wo
             addNextIntentWithParentStack(intent)
             getPendingIntent(0x100, PendingIntent.FLAG_UPDATE_CURRENT)
         }
+
+        val manager = from(context)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                Constants.CHANNEL_ID_PERIOD_WORK, Constants.CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            manager.createNotificationChannel(channel)
+        }
         val notification =
             NotificationCompat.Builder(context, Constants.CHANNEL_ID_PERIOD_WORK).apply {
                 setContentIntent(pendingIntent)
@@ -42,11 +57,16 @@ class AppointmentNotification(private val context: Context, workerParameters: Wo
         val vibrate = longArrayOf(0, 100, 200, 300)
         notification.setVibrate(vibrate)
 
-        with(from(context)) {
-            notify(0x111, notification.build())
+        with(manager) {
+            notify(getRandomNumber(), notification.build())
         }
 
     }
-
+    private fun getRandomNumber(): Int {
+        val dd = Date()
+        val ft = SimpleDateFormat("mmssSS", Locale.ROOT)
+        val s: String = ft.format(dd)
+        return s.toInt()
+    }
 
 }

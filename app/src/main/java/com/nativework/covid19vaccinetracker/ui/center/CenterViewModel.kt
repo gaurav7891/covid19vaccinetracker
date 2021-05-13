@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.nativework.covid19vaccinetracker.base.BaseViewModel
 
-class CenterViewModel() : BaseViewModel() {
+class CenterViewModel : BaseViewModel() {
 
     private val time = MutableLiveData<Int>()
 

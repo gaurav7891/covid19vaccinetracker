@@ -6,4 +6,5 @@ object Constants {
     const val TXN_ID = "com.nativework.covid19vaccinetracker.TXN_ID"
     const val TOKEN = "com.nativework.covid19vaccinetracker.TOKEN"
     const val CHANNEL_ID_PERIOD_WORK = "com.nativework.covid19vaccinetracker.PERIODIC_APP_UPDATES"
+    const val CHANNEL_NAME = "com.nativework.covid19vaccinetracker.CHANNEL_NAME"
 }

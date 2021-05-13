@@ -49,8 +49,9 @@ class CenterActivity : BaseApp(), CenterAdapter.VaccineCenterClickListener {
             val periodWork = PeriodicWorkRequest.Builder(
                 AppointmentNotification::class.java,
                 it.toLong(),
-                TimeUnit.MINUTES
-            )
+                TimeUnit.MINUTES,
+                5,
+                TimeUnit.MINUTES)
                 .addTag("vaccination-periodic-notification")
                 .setConstraints(constraints)
                 .build()
