@@ -13,11 +13,11 @@ import com.google.gson.reflect.TypeToken
 import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.base.BaseApp
 import com.nativework.covid19vaccinetracker.base.BaseFragment
-import com.nativework.covid19vaccinetracker.databinding.FragmentHomeBinding
+import com.nativework.covid19vaccinetracker.databinding.FragmentDistrictCalenderBinding
 import com.nativework.covid19vaccinetracker.models.SavedPreferences
 import com.nativework.covid19vaccinetracker.models.locality.District
 import com.nativework.covid19vaccinetracker.models.locality.StatesList
-import com.nativework.covid19vaccinetracker.ui.appointment.AppointmentFragment
+import com.nativework.covid19vaccinetracker.ui.appointment.CalenderByPincodeFragment
 import com.nativework.covid19vaccinetracker.ui.center.CenterActivity
 import com.nativework.covid19vaccinetracker.ui.home.AutocompleteAdapter
 import com.nativework.covid19vaccinetracker.ui.home.RecentSearchAdapter
@@ -29,9 +29,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class HomeFragment : BaseFragment(), RecentSearchAdapter.OnClickListener {
+class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickListener {
 
-    private lateinit var binding: FragmentHomeBinding
+    private lateinit var binding: FragmentDistrictCalenderBinding
     private var viewModel: HomeViewModel? = null
     private var adapter: AutocompleteAdapter? = null
     private var stateStringList = ArrayList<String>()
@@ -48,7 +48,7 @@ class HomeFragment : BaseFragment(), RecentSearchAdapter.OnClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentHomeBinding.inflate(layoutInflater)
+        binding = FragmentDistrictCalenderBinding.inflate(layoutInflater)
         val view = binding.root
         //setContentView(view)
 
@@ -242,7 +242,7 @@ class HomeFragment : BaseFragment(), RecentSearchAdapter.OnClickListener {
         when (item.itemId) {
             R.id.menu_searchByPin -> {
                 (activity as BaseApp).loadFragment(
-                    AppointmentFragment.newInstance(),
+                    CalenderByPincodeFragment.newInstance(),
                     R.id.home_container
                 )
                 return true

@@ -33,20 +33,6 @@ open class BaseApp : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-  /*  override fun onBackPressed() {
-        if (backPressedToExitOnce) {
-            super.onBackPressed()
-            return
-        }
-        backPressedToExitOnce = true
-        Toast.makeText(this, "Press back to exit again", Toast.LENGTH_SHORT).show()
-
-        Handler().postDelayed(Runnable { backPressedToExitOnce = false }, 2000)
-        *//*Handler(Looper.getMainLooper()).postAtTime({
-            backPressedToExitOnce = false
-        },2000)*//*
-    }*/
-
     override fun onBackPressed() {
         super.onBackPressed()
         if(supportFragmentManager.backStackEntryCount > 0){

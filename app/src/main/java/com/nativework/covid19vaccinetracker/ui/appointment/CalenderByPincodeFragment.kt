@@ -12,15 +12,15 @@ import androidx.lifecycle.observe
 import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.base.BaseApp
 import com.nativework.covid19vaccinetracker.base.BaseFragment
-import com.nativework.covid19vaccinetracker.databinding.FragmentAppointmentBinding
+import com.nativework.covid19vaccinetracker.databinding.FragmentPincodeCalenderBinding
 import com.nativework.covid19vaccinetracker.ui.center.CenterActivity
 import com.nativework.covid19vaccinetracker.utils.Constants
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AppointmentFragment : BaseFragment() {
+class CalenderByPincodeFragment : BaseFragment() {
 
-    private var _binding: FragmentAppointmentBinding? = null
+    private var _binding: FragmentPincodeCalenderBinding? = null
     private val binding get() = _binding!!
     private var viewModel: AppointmentViewModel? = null
     private var dateSelected: String? = null
@@ -31,7 +31,7 @@ class AppointmentFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         viewModel = ViewModelProvider(this).get(AppointmentViewModel::class.java)
-        _binding = FragmentAppointmentBinding.inflate(inflater, container, false)
+        _binding = FragmentPincodeCalenderBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
         return binding.root
     }
@@ -42,9 +42,9 @@ class AppointmentFragment : BaseFragment() {
     }
 
     companion object {
-        fun newInstance(): AppointmentFragment {
+        fun newInstance(): CalenderByPincodeFragment {
             val args = Bundle()
-            val fragment = AppointmentFragment()
+            val fragment = CalenderByPincodeFragment()
             fragment.arguments = args
             return fragment
         }
@@ -98,7 +98,7 @@ class AppointmentFragment : BaseFragment() {
 
     private fun getPincode(): Int {
         val pin: String = binding.edtPincode.text.trim().toString()
-        if (!pin.isNullOrEmpty()) {
+        if (pin.isNotEmpty()) {
             return pin.toInt()
         } else {
             Toast.makeText(context, "Enter pin code", Toast.LENGTH_SHORT).show()
