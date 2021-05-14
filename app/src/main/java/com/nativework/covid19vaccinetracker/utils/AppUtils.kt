@@ -6,10 +6,14 @@ import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.models.SavedPreferences
 import com.nativework.covid19vaccinetracker.models.locality.CitiesList
 import com.nativework.covid19vaccinetracker.models.locality.StatesList
+import timber.log.Timber
 import java.io.IOException
 import java.io.InputStream
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.experimental.and
 
 object AppUtils {
@@ -69,6 +73,13 @@ object AppUtils {
         listOfPref.add(SavedPreferences("SearchByDistrict", districtId,district, stateId,state, dateSelected))
         val json = Gson().toJson(listOfPref)
         PreferenceConnector.writeString(context, PreferenceConnector.SAVED_PREF, json)
+    }
+
+    fun getCurrentDate(): String {
+        val currentDate= Calendar.getInstance().time
+        val simpleDateFormat = SimpleDateFormat("dd-MM-yyyy",Locale.getDefault())
+        Timber.d("current date %s", simpleDateFormat.format(currentDate))
+        return simpleDateFormat.format(currentDate)
     }
 
 }

@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.work.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nativework.covid19vaccinetracker.R
@@ -17,6 +18,7 @@ import com.nativework.covid19vaccinetracker.databinding.ActivityHomeBinding
 import com.nativework.covid19vaccinetracker.models.SavedPreferences
 import com.nativework.covid19vaccinetracker.models.locality.District
 import com.nativework.covid19vaccinetracker.models.locality.StatesList
+import com.nativework.covid19vaccinetracker.service.AppointmentNotification
 import com.nativework.covid19vaccinetracker.ui.appointment.AppointmentFragment
 import com.nativework.covid19vaccinetracker.ui.center.CenterActivity
 import com.nativework.covid19vaccinetracker.ui.home.AutocompleteAdapter
@@ -24,9 +26,11 @@ import com.nativework.covid19vaccinetracker.ui.home.RecentSearchAdapter
 import com.nativework.covid19vaccinetracker.utils.AppUtils
 import com.nativework.covid19vaccinetracker.utils.Constants
 import com.nativework.covid19vaccinetracker.utils.PreferenceConnector
+import timber.log.Timber
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 
@@ -44,6 +48,10 @@ class HomeActivity : BaseApp(), RecentSearchAdapter.OnClickListener {
     private var stateId: String? = null
     private var recentAdapter: RecentSearchAdapter? = null
 
+    private val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
@@ -59,9 +67,9 @@ class HomeActivity : BaseApp(), RecentSearchAdapter.OnClickListener {
     private fun setListeners() {
         binding.autoTextState.setOnItemClickListener { adapterView, _, position, _ ->
             Toast.makeText(
-                this,
-                adapterView.getItemAtPosition(position) as String,
-                Toast.LENGTH_SHORT
+                    this,
+                    adapterView.getItemAtPosition(position) as String,
+                    Toast.LENGTH_SHORT
             ).show()
             val itemSelected = adapterView.getItemAtPosition(position)
             var stateId = ""
@@ -70,17 +78,16 @@ class HomeActivity : BaseApp(), RecentSearchAdapter.OnClickListener {
                     stateId = state.stateId.toString()
                 }
             }
-            Log.d("tag", stateId!!)
-            if (!stateId.isNullOrEmpty()) {
-                viewModel?.getDistrictList(stateId!!)
+            if (stateId.isNotEmpty()) {
+                viewModel?.getDistrictList(stateId)
             }
         }
 
         binding.autoTextDistrict.setOnItemClickListener { adapterView, _, position, _ ->
             Toast.makeText(
-                this,
-                adapterView.getItemAtPosition(position) as String,
-                Toast.LENGTH_SHORT
+                    this,
+                    adapterView.getItemAtPosition(position) as String,
+                    Toast.LENGTH_SHORT
             ).show()
 
             val itemSelected = adapterView.getItemAtPosition(position)
@@ -89,7 +96,7 @@ class HomeActivity : BaseApp(), RecentSearchAdapter.OnClickListener {
                     districtId = d.district_id.toString()
                 }
             }
-            districtId?.let { Log.d("tag", it) }
+            districtId?.let { Timber.d("tag %s", it) }
         }
 
         binding.btnSearch.setOnClickListener {
@@ -114,9 +121,9 @@ class HomeActivity : BaseApp(), RecentSearchAdapter.OnClickListener {
 
     private fun getCentersAvailable(state: String, district: String, dateSelected: String?) {
         Toast.makeText(
-            this,
-            dateSelected,
-            Toast.LENGTH_SHORT
+                this,
+                dateSelected,
+                Toast.LENGTH_SHORT
         ).show()
         if (dateSelected != null) {
             districtId?.let { viewModel?.getCalendarByDistrict(it, dateSelected) }
@@ -190,11 +197,38 @@ class HomeActivity : BaseApp(), RecentSearchAdapter.OnClickListener {
 
         viewModel?.getCenterListData()?.observe(this, {
             if (it.size > 0) {
+                setNotification(districtId)
                 val intent = Intent(this, CenterActivity::class.java)
+                intent.putExtra(Constants.DISTRICT_ID, districtId)
+                intent.putExtra(Constants.STATE_ID, stateId)
                 intent.putParcelableArrayListExtra(Constants.INTENT_EXTRA_DATA, it)
                 startActivity(intent)
             }
         })
+    }
+
+    private fun setNotification(districtId: String?) {
+        if (districtId != null) {
+            PreferenceConnector.writeString(this, PreferenceConnector.DISTRICT_ID, districtId)
+        }
+        val data = Data.Builder()
+        data.putString(Constants.DISTRICT_ID, districtId)
+        val periodWork = PeriodicWorkRequest.Builder(
+                AppointmentNotification::class.java,
+                Constants.REPEAT_INTERVAL,
+                TimeUnit.MINUTES,
+                Constants.FLEX_INTERVAL,
+                TimeUnit.MINUTES)
+                .addTag("vaccination-periodic-notification")
+                .setConstraints(constraints)
+                .setInputData(data.build())
+                .build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "vaccination-periodic-notification",
+                ExistingPeriodicWorkPolicy.KEEP,
+                periodWork
+        )
+        Timber.d("Notification set successfully %s", periodWork)
     }
 
     private fun getDistrictNameList(districtList: java.util.ArrayList<District>?): ArrayList<String> {
@@ -212,8 +246,8 @@ class HomeActivity : BaseApp(), RecentSearchAdapter.OnClickListener {
         center.districtId?.let {
             center.date?.let { it1 ->
                 viewModel?.getCalendarByDistrict(
-                    it,
-                    it1
+                        it,
+                        it1
                 )
             }
         }

@@ -17,6 +17,7 @@ import androidx.preference.PreferenceManager
 open class PreferenceConnector {
     companion object {
 
+        const val DISTRICT_ID = "com.nativework.covid19vaccinetracker.DISTRICT_ID"
         const val LAST_PERIODIC_TIME = "com.nativework.covid19vaccinetracker.LAST_PERIODIC_TIME"
         const val SAVED_PREF = "com.nativework.covid19vaccinetracker.SAVED_PREF"
 

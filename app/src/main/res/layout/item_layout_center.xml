@@ -52,6 +52,7 @@
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
                     android:tag="Notification not active"
+                    android:visibility="gone"
                     android:src="@drawable/ic_baseline_notifications_none_24"
                      />
 

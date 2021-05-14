@@ -12,7 +12,10 @@ import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.models.Center
 import com.nativework.covid19vaccinetracker.models.Session
 
-class CenterAdapter(private val mContext: Context, private val list: ArrayList<Center>, private val listener:VaccineCenterClickListener) :
+class CenterAdapter(
+    private val mContext: Context,
+    private val list: ArrayList<Center>
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var adapter: SlotAdapter? = null
@@ -52,27 +55,6 @@ class CenterAdapter(private val mContext: Context, private val list: ArrayList<C
             slotRecyclerView.layoutManager = LinearLayoutManager(mContext)
             slotRecyclerView.adapter = adapter
             imgNotification.tag = "Notification not active"
-            imgNotification.setOnClickListener {
-                if (imgNotification.tag.equals("Notification not active")){
-                    imgNotification.tag = "Notification active"
-                    imgNotification.setImageResource(R.drawable.ic_baseline_notifications_active_24)
-                    // set for notification
-                    listener.onNotifyVaccineAvailabilityClicked(center)
-
-                }else{
-                    imgNotification.tag = "Notification not active"
-                    imgNotification.setImageResource(R.drawable.ic_baseline_notifications_none_24)
-                    // cancel the notification
-                    listener.onNotificationCanceled(center)
-                }
-            }
-
-
         }
-    }
-
-    interface VaccineCenterClickListener{
-        fun onNotifyVaccineAvailabilityClicked(center: Center)
-        fun onNotificationCanceled(center: Center)
     }
 }

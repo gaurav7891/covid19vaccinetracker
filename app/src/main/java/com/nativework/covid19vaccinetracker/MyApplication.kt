@@ -5,7 +5,10 @@ import android.content.Context
 import com.nativework.covid19vaccinetracker.deps.DaggerInit
 import com.nativework.covid19vaccinetracker.deps.Deps
 import com.nativework.covid19vaccinetracker.networks.NetworkServiceImpl
+import timber.log.Timber
+import timber.log.Timber.DebugTree
 import javax.inject.Inject
+
 
 class MyApplication : Application() {
     @Inject
@@ -19,6 +22,9 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         initDagger()
+        if (BuildConfig.DEBUG) {
+            Timber.plant(DebugTree())
+        }
     }
 
     private fun initDagger() {

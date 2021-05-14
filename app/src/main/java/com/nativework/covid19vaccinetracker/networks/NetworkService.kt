@@ -4,6 +4,7 @@ import com.nativework.covid19vaccinetracker.models.*
 import com.nativework.covid19vaccinetracker.models.locality.DistrictList
 import com.nativework.covid19vaccinetracker.models.*
 import io.reactivex.Single
+import retrofit2.Call
 import retrofit2.http.*
 import retrofit2.http.*
 import java.util.*
@@ -29,6 +30,12 @@ interface NetworkService {
         @Query("district_id") districtID: String,
         @Query("date") date: String
     ): Single<GetCalendarByDistrictResponse>
+
+    @GET("v2/appointment/sessions/public/calendarByDistrict")
+    fun getCenterListFromDistrict(
+            @Query("district_id") districtID: String,
+            @Query("date") date: String
+    ): Call<GetCalendarByDistrictResponse>
 
     // get Appointment by date and pincode
     @GET("v2/appointment/sessions/public/calendarByPin")
