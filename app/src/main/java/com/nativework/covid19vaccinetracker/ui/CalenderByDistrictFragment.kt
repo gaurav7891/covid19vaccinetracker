@@ -46,6 +46,8 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
     private var dateSelected: String? = null
     private var stateId: String? = null
     private var recentAdapter: RecentSearchAdapter? = null
+    private var isLowerGroup: Boolean = false
+    private var isUpperGroup: Boolean = false
 
     private val constraints = Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -55,7 +57,7 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentDistrictCalenderBinding.inflate(layoutInflater)
         val view = binding.root
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
@@ -106,9 +108,38 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
             districtId?.let { Timber.d("tag %s", it) }
         }
 
+        binding.checkBoxLowerGroup.setOnCheckedChangeListener { _, isChecked ->
+            isLowerGroup = isChecked
+        }
+
+        binding.checkBoxUpperGroup.setOnCheckedChangeListener { _, isChecked ->
+            isUpperGroup = isChecked
+        }
+
         binding.btnSearch.setOnClickListener {
             val state = binding.autoTextState.text.toString()
             val district = binding.autoTextDistrict.text.toString()
+            if (!isPreferenceSelected()) {
+                Toast.makeText(
+                    activity,
+                    "Please select the notification preference",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+            if (state.isEmpty()) {
+                Toast.makeText(activity, "Select your state from dropdown for search", Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+            if (district.isEmpty()) {
+                Toast.makeText(
+                    activity,
+                    "Invalid district in the state selected",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
             if (dateSelected.isNullOrEmpty()) {
                 dateSelected = getSelectedDate()
             }
@@ -119,6 +150,11 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
                 dateSelected,
                 districtId,
                 stateId
+            )
+            Timber.d(
+                "Notification preference selected from checkbox is Lower = %s, Upper = %s",
+                isLowerGroup,
+                isUpperGroup
             )
             getCentersAvailable(state, district, dateSelected)
         }
@@ -131,6 +167,10 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             dateSelected = sdf.format(calendar.time)
         }
+    }
+
+    private fun isPreferenceSelected(): Boolean {
+        return binding.checkBoxLowerGroup.isChecked || binding.checkBoxUpperGroup.isChecked
     }
 
     private fun getCentersAvailable(state: String, district: String, dateSelected: String?) {
@@ -212,7 +252,10 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
 
         viewModel?.getCenterListData()?.observe(viewLifecycleOwner) {
             if (it.size > 0) {
+                //save the notification preference
+                AppUtils.saveNotificationPref(activity, isLowerGroup, isUpperGroup)
                 setNotification(districtId)
+                Timber.d("District ID: %s", districtId)
                 val intent = Intent(context, CenterActivity::class.java)
                 intent.putExtra(Constants.DISTRICT_ID, districtId)
                 intent.putExtra(Constants.STATE_ID, stateId)
@@ -224,7 +267,13 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
 
     private fun setNotification(districtId: String?) {
         if (districtId != null) {
-            activity?.let { PreferenceConnector.writeString(it, PreferenceConnector.DISTRICT_ID, districtId) }
+            activity?.let {
+                PreferenceConnector.writeString(
+                    it,
+                    PreferenceConnector.DISTRICT_ID,
+                    districtId
+                )
+            }
         }
         val data = Data.Builder()
         data.putString(Constants.DISTRICT_ID, districtId)
@@ -233,7 +282,8 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
             Constants.REPEAT_INTERVAL,
             TimeUnit.MINUTES,
             Constants.FLEX_INTERVAL,
-            TimeUnit.MINUTES)
+            TimeUnit.MINUTES
+        )
             .addTag("vaccination-periodic-notification")
             .setConstraints(constraints)
             .setInputData(data.build())
@@ -241,7 +291,7 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
         activity?.let {
             WorkManager.getInstance(it).enqueueUniquePeriodicWork(
                 "vaccination-periodic-notification",
-                ExistingPeriodicWorkPolicy.KEEP,
+                ExistingPeriodicWorkPolicy.REPLACE,
                 periodWork
             )
         }
