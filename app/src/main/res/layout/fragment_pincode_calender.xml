@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cardview_light_background"
-    tools:context=".ui.appointment.AppointmentFragment">
+    tools:context=".ui.appointment.CalenderByPincodeFragment">
 
     <TextView
         android:id="@+id/txtMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Please search the available centers for vaccine by District"
+        android:text="@string/please_search_the_available_centers_for_vaccine_by_pin_code"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,15 +22,15 @@
         android:id="@+id/edtPincode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter Pincode"
-        android:inputType="number"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:autofillHints="@string/enter_pincode"
+        android:hint="@string/enter_pincode"
+        android:inputType="number"
         android:maxLength="6"
-        app:layout_constraintTop_toBottomOf="@id/txtMessage"
-        />
+        app:layout_constraintTop_toBottomOf="@id/txtMessage" />
 
     <CalendarView
         android:id="@+id/calendarView"
@@ -45,11 +45,11 @@
         app:layout_constraintTop_toBottomOf="@+id/edtPincode" />
 
     <Button
-        android:id="@+id/btnSearch"
+        android:id="@+id/btnSearchByPin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Search"
+        android:text="@string/search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calendarView" />
