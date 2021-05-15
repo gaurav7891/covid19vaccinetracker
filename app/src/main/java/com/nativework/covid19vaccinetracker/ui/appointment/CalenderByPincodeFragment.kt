@@ -3,32 +3,36 @@ package com.nativework.covid19vaccinetracker.ui.appointment
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
+import com.nativework.covid19vaccinetracker.R
+import com.nativework.covid19vaccinetracker.base.BaseApp
 import com.nativework.covid19vaccinetracker.base.BaseFragment
-import com.nativework.covid19vaccinetracker.databinding.FragmentAppointmentBinding
+import com.nativework.covid19vaccinetracker.databinding.FragmentPincodeCalenderBinding
 import com.nativework.covid19vaccinetracker.ui.center.CenterActivity
 import com.nativework.covid19vaccinetracker.utils.Constants
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AppointmentFragment : BaseFragment() {
+class CalenderByPincodeFragment : BaseFragment() {
 
-    private var _binding: FragmentAppointmentBinding? = null
+    private var _binding: FragmentPincodeCalenderBinding? = null
     private val binding get() = _binding!!
     private var viewModel: AppointmentViewModel? = null
     private var dateSelected: String? = null
-    private var pincode:Int? = 0
+    private var pincode: Int? = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         viewModel = ViewModelProvider(this).get(AppointmentViewModel::class.java)
-        _binding = FragmentAppointmentBinding.inflate(inflater, container, false)
+        _binding = FragmentPincodeCalenderBinding.inflate(inflater, container, false)
+        setHasOptionsMenu(true)
         return binding.root
     }
 
@@ -37,10 +41,10 @@ class AppointmentFragment : BaseFragment() {
         _binding = null
     }
 
-    companion object{
-        fun newInstance(): AppointmentFragment{
+    companion object {
+        fun newInstance(): CalenderByPincodeFragment {
             val args = Bundle()
-            val fragment = AppointmentFragment()
+            val fragment = CalenderByPincodeFragment()
             fragment.arguments = args
             return fragment
         }
@@ -49,6 +53,7 @@ class AppointmentFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        (activity as BaseApp).setToolbarTitle("Search By Pin Code")
         setListeners()
         initData()
         setObservers()
@@ -64,15 +69,13 @@ class AppointmentFragment : BaseFragment() {
             dateSelected = sdf.format(calendar.time)
         }
 
-        binding.btnSearch.setOnClickListener {
+        binding.edtPincode.setOnClickListener {
             pincode = getPincode()
         }
 
-        binding.btnSearch.setOnClickListener {
-            if (dateSelected.isNullOrEmpty() || pincode == 0) {
+        binding.btnSearchByPin.setOnClickListener {
+            if (!dateSelected.isNullOrEmpty() && pincode == 0) {
                 dateSelected = getSelectedDate()
-                pincode = getPincode()
-            }else{
                 pincode = getPincode()
                 dateSelected?.let { it1 -> pincode?.let { it2 -> getAppointment(it2, it1) } }
             }
@@ -81,11 +84,10 @@ class AppointmentFragment : BaseFragment() {
     }
 
     private fun getAppointment(i: Int, date: String) {
-        println("-----  $i  and  $date")
         viewModel?.getAppointmentByPincodeAndDate(i, date)
     }
 
-    private fun initData(){
+    private fun initData() {
         val calendar = Calendar.getInstance()
         calendar.apply {
             set(Calendar.HOUR_OF_DAY, Calendar.getInstance().getActualMinimum(Calendar.HOUR_OF_DAY))
@@ -94,11 +96,11 @@ class AppointmentFragment : BaseFragment() {
         binding.calendarView.minDate = date
     }
 
-    private fun  getPincode(): Int {
-        val pin :String = binding.edtPincode.text.trim().toString()
-        if (!pin.isNullOrEmpty()){
+    private fun getPincode(): Int {
+        val pin: String = binding.edtPincode.text.trim().toString()
+        if (pin.isNotEmpty()) {
             return pin.toInt()
-        }else{
+        } else {
             Toast.makeText(context, "Enter pin code", Toast.LENGTH_SHORT).show()
         }
         return 0
@@ -111,19 +113,19 @@ class AppointmentFragment : BaseFragment() {
 
     private fun setObservers() {
 
-        viewModel?.showProgress?.observe(this, {
+        viewModel?.showProgress?.observe(viewLifecycleOwner) {
             if (it) {
                 binding.progressLayout.visibility = View.VISIBLE
             } else {
                 binding.progressLayout.visibility = View.GONE
             }
-        })
+        }
 
-        viewModel?.errorMessage?.observe(this, {
+        viewModel?.errorMessage?.observe(viewLifecycleOwner) {
             Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
-        })
+        }
 
-        viewModel?.getCenterListData()?.observe(this, {
+        viewModel?.getCenterListData()?.observe(viewLifecycleOwner) {
             if (it.size > 0) {
                 val intent = Intent(context, CenterActivity::class.java)
                 intent.putParcelableArrayListExtra(Constants.INTENT_EXTRA_DATA, it)
@@ -131,6 +133,12 @@ class AppointmentFragment : BaseFragment() {
             } else if (it.size == 0) {
                 Toast.makeText(context, "Empty/No Schedule found", Toast.LENGTH_LONG).show()
             }
-        })
+        }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        val menuPin = menu.findItem(R.id.menu_searchByPin)
+        menuPin.isEnabled = false
+        return
     }
 }

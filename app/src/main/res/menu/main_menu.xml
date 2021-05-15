@@ -2,9 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/menu_searchByDistrict"
+        android:icon="@drawable/ic_searching_location_24"
+        android:title="@string/search_by_district"
+        app:showAsAction="never"
+        />
+
     <item android:id="@+id/menu_searchByPin"
         android:icon="@drawable/ic_searching_location_24"
         android:title="Search by Pin"
         app:showAsAction="never"
         />
+
 </menu>

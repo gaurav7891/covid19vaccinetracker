@@ -1,7 +1,6 @@
 package com.nativework.covid19vaccinetracker.ui.center
 
 import android.os.Bundle
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nativework.covid19vaccinetracker.base.BaseApp
 import com.nativework.covid19vaccinetracker.databinding.ActivityCenterBinding
@@ -11,7 +10,6 @@ import com.nativework.covid19vaccinetracker.utils.Constants
 class CenterActivity : BaseApp() {
 
     private lateinit var binding: ActivityCenterBinding
-    private lateinit var viewModel: CenterViewModel
     private var adapter: CenterAdapter? = null
 
     private var centerList = ArrayList<Center>()
@@ -24,8 +22,8 @@ class CenterActivity : BaseApp() {
         binding = ActivityCenterBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        viewModel = ViewModelProvider(this).get(CenterViewModel::class.java)
-        title = "Vaccine Centers"
+        setToolbarBackButton(true)
+        setToolbarTitle("Vaccine Centers")
         setListeners()
         initData()
     }
