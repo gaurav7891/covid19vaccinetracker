@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +12,10 @@ import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.models.Center
 import com.nativework.covid19vaccinetracker.models.Session
 
-class CenterAdapter(private val mContext: Context, private val list: ArrayList<Center>) :
+class CenterAdapter(
+    private val mContext: Context,
+    private val list: ArrayList<Center>
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var adapter: SlotAdapter? = null
@@ -39,6 +43,7 @@ class CenterAdapter(private val mContext: Context, private val list: ArrayList<C
         private var txVaccinationType: TextView = itemView.findViewById(R.id.txVaccinationType)
         private var txtPinCode: TextView = itemView.findViewById(R.id.txtPinCode)
         private var slotRecyclerView: RecyclerView = itemView.findViewById(R.id.slotRecyclerView)
+        private var imgNotification: ImageView = itemView.findViewById(R.id.imgNotification)
 
 
         fun bind(center: Center) {
@@ -49,6 +54,7 @@ class CenterAdapter(private val mContext: Context, private val list: ArrayList<C
             adapter = SlotAdapter(mContext, center.sessions as ArrayList<Session>)
             slotRecyclerView.layoutManager = LinearLayoutManager(mContext)
             slotRecyclerView.adapter = adapter
+            imgNotification.tag = "Notification not active"
         }
     }
 }

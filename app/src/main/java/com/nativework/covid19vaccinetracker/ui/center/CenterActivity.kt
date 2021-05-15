@@ -1,8 +1,8 @@
 package com.nativework.covid19vaccinetracker.ui.center
 
 import android.os.Bundle
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.base.BaseApp
 import com.nativework.covid19vaccinetracker.databinding.ActivityCenterBinding
 import com.nativework.covid19vaccinetracker.models.Center
@@ -11,17 +11,20 @@ import com.nativework.covid19vaccinetracker.utils.Constants
 class CenterActivity : BaseApp() {
 
     private lateinit var binding: ActivityCenterBinding
+    private lateinit var viewModel: CenterViewModel
     private var adapter: CenterAdapter? = null
 
     private var centerList = ArrayList<Center>()
     private var freeList = ArrayList<Center>()
     private var paidList = ArrayList<Center>()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCenterBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        viewModel = ViewModelProvider(this).get(CenterViewModel::class.java)
         title = "Vaccine Centers"
         setListeners()
         initData()
@@ -95,5 +98,4 @@ class CenterActivity : BaseApp() {
         }
         return freeList
     }
-
 }

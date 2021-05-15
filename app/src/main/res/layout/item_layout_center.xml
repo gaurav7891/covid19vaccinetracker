@@ -28,6 +28,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
+                    android:text="PHCU maha ajskdha"
+                    android:layout_gravity="center|center_vertical"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -36,12 +38,27 @@
                     android:id="@+id/txVaccinationType"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:textAlignment="center"
+                    android:layout_weight="0.35"
+                    android:text="Free"
+                    android:layout_gravity="center|center_vertical"
                     android:textColor="@color/teal_200"
                     android:textStyle="bold" />
 
+                <ImageView
+                    android:layout_width="0dp"
+                    android:id="@+id/imgNotification"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.15"
+                    android:layout_gravity="center_vertical"
+                    android:adjustViewBounds="true"
+                    android:tag="Notification not active"
+                    android:visibility="gone"
+                    android:src="@drawable/ic_baseline_notifications_none_24"
+                     />
+
             </LinearLayout>
+
+
 
             <TextView
                 android:id="@+id/txtCenterAddress"

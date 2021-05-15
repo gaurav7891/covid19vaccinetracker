@@ -4,6 +4,7 @@ import com.nativework.covid19vaccinetracker.models.*
 import com.nativework.covid19vaccinetracker.models.locality.DistrictList
 import com.nativework.covid19vaccinetracker.models.*
 import io.reactivex.Single
+import retrofit2.Call
 import java.util.*
 
 /**
@@ -29,6 +30,10 @@ class NetworkServiceImpl(private val mNetworkService: NetworkService) : NetworkS
         date: String
     ): Single<GetCalendarByDistrictResponse> {
         return mNetworkService.getCalendarByDistrict(districtID, date)
+    }
+
+    override fun getCenterListFromDistrict(districtID: String, date: String): Call<GetCalendarByDistrictResponse> {
+       return mNetworkService.getCenterListFromDistrict(districtID, date)
     }
 
     override fun getAppointmentByPincodeAndDate(
