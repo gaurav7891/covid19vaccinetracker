@@ -3,8 +3,6 @@ package com.nativework.covid19vaccinetracker.ui
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.work.Constraints
-import androidx.work.NetworkType
 import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.base.BaseApp
 import com.nativework.covid19vaccinetracker.databinding.ActivityHomeBinding
@@ -14,10 +12,6 @@ import com.nativework.covid19vaccinetracker.ui.appointment.CalenderByPincodeFrag
 class HomeActivity : BaseApp() {
 
     private lateinit var binding: ActivityHomeBinding
-
-    private val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

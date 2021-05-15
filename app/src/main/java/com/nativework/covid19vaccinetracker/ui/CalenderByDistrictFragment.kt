@@ -58,10 +58,7 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
     ): View? {
         binding = FragmentDistrictCalenderBinding.inflate(layoutInflater)
         val view = binding.root
-        //setContentView(view)
-
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-
         return view
     }
 
@@ -88,7 +85,6 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
                     stateId = state.stateId.toString()
                 }
             }
-            Log.d("tag", stateId)
             if (stateId.isNotEmpty()) {
                 viewModel?.getDistrictList(stateId)
             }
@@ -107,7 +103,7 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
                     districtId = d.district_id.toString()
                 }
             }
-            districtId?.let { Log.d("tag", it) }
+            districtId?.let { Timber.d("tag %s", it) }
         }
 
         binding.btnSearch.setOnClickListener {
@@ -216,7 +212,10 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
 
         viewModel?.getCenterListData()?.observe(viewLifecycleOwner) {
             if (it.size > 0) {
+                setNotification(districtId)
                 val intent = Intent(context, CenterActivity::class.java)
+                intent.putExtra(Constants.DISTRICT_ID, districtId)
+                intent.putExtra(Constants.STATE_ID, stateId)
                 intent.putParcelableArrayListExtra(Constants.INTENT_EXTRA_DATA, it)
                 startActivity(intent)
             }
