@@ -1,6 +1,7 @@
 package com.nativework.covid19vaccinetracker.utils
 
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.fragment.app.FragmentActivity
 import com.google.gson.Gson
 import com.nativework.covid19vaccinetracker.AgeGroups
@@ -8,6 +9,7 @@ import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.models.SavedPreferences
 import com.nativework.covid19vaccinetracker.models.locality.CitiesList
 import com.nativework.covid19vaccinetracker.models.locality.StatesList
+import com.nativework.covid19vaccinetracker.ui.center.VaccineCenterActivity
 import timber.log.Timber
 import java.io.IOException
 import java.io.InputStream
@@ -58,11 +60,6 @@ object AppUtils {
         return Gson().fromJson(json, StatesList::class.java)
     }
 
-    fun getCitiesModelFromJson(id: Int, context: Context): CitiesList {
-        val json = inputStreamToString(context.resources.openRawResource(id))
-        return Gson().fromJson(json, CitiesList::class.java)
-    }
-
     fun saveSelectedSearch(
         context: Context,
         state: String,
@@ -99,14 +96,19 @@ object AppUtils {
         upperGroup: Boolean
     ) {
         context?.let {
+            Timber.d("Saving the data lowerGroup %s upperGroup %s", lowerGroup, upperGroup)
             if (lowerGroup) {
-                PreferenceConnector.writeBoolean(it, PreferenceConnector.IS_LOWER_GROUP, lowerGroup)
+                PreferenceConnector.writeBoolean(it, PreferenceConnector.IS_LOWER_GROUP, true)
+                PreferenceConnector.writeBoolean(it, PreferenceConnector.IS_UPPER_GROUP, false)
             }
             if (upperGroup) {
-                PreferenceConnector.writeBoolean(it, PreferenceConnector.IS_UPPER_GROUP, upperGroup)
+                PreferenceConnector.writeBoolean(it, PreferenceConnector.IS_UPPER_GROUP, true)
+                PreferenceConnector.writeBoolean(it, PreferenceConnector.IS_LOWER_GROUP, false)
             }
             if (upperGroup && lowerGroup) {
                 PreferenceConnector.writeBoolean(it, PreferenceConnector.IS_ALL_GROUP, true)
+                PreferenceConnector.writeBoolean(it, PreferenceConnector.IS_UPPER_GROUP, false)
+                PreferenceConnector.writeBoolean(it, PreferenceConnector.IS_LOWER_GROUP, false)
             }
         }
 
@@ -122,6 +124,7 @@ object AppUtils {
                 PreferenceConnector.readBoolean(it, PreferenceConnector.IS_UPPER_GROUP, false)
             val isAll = PreferenceConnector.readBoolean(it, PreferenceConnector.IS_ALL_GROUP, true)
 
+            Timber.d("Getting the data lowerGroup %s upperGroup %s", isLower, isUpper)
             if (isLower) return AgeGroups.AGE_18_44.name
             if (isUpper) return AgeGroups.AGE_45_ALL.name
             if (isAll) return AgeGroups.ALL_GROUP.name
@@ -129,6 +132,18 @@ object AppUtils {
         }
 
         return AgeGroups.ALL_GROUP.name
+    }
+
+    // check if the particular app is installed or not
+    fun isAppInstalled(context: Context, uri:String): Boolean {
+        val packageManager = context.packageManager
+        try {
+            packageManager.getPackageInfo(uri, PackageManager.GET_ACTIVITIES)
+            return true
+        }catch (ex:PackageManager.NameNotFoundException){
+            Timber.e(ex, "App is not installed on the device")
+        }
+        return false
     }
 
 }

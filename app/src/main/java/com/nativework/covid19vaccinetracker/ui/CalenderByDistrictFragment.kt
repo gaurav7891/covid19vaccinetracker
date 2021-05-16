@@ -254,6 +254,7 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
             if (it.size > 0) {
                 //save the notification preference
                 AppUtils.saveNotificationPref(activity, isLowerGroup, isUpperGroup)
+                Timber.d("isLower %s isUpperGroup %s", isLowerGroup, isUpperGroup)
                 setNotification(districtId)
                 Timber.d("District ID: %s", districtId)
                 val intent = Intent(context, CenterActivity::class.java)

@@ -19,6 +19,7 @@ import com.nativework.covid19vaccinetracker.models.Session
 import com.nativework.covid19vaccinetracker.networks.NetworkModule
 import com.nativework.covid19vaccinetracker.networks.NetworkService
 import com.nativework.covid19vaccinetracker.ui.HomeActivity
+import com.nativework.covid19vaccinetracker.ui.center.VaccineCenterActivity
 import com.nativework.covid19vaccinetracker.utils.AppUtils
 import com.nativework.covid19vaccinetracker.utils.Constants
 import com.nativework.covid19vaccinetracker.utils.PreferenceConnector
@@ -83,7 +84,8 @@ class AppointmentNotification(private val context: Context, workerParameters: Wo
     }
 
     private fun showNotification(center: Center, sessions: Session) {
-        val intent = Intent(context, HomeActivity::class.java).apply {
+        val intent = Intent(context, VaccineCenterActivity::class.java).apply {
+            putExtra(Constants.CENTER_DETAILS, center)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent = TaskStackBuilder.create(context).run {
