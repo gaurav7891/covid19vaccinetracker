@@ -20,6 +20,9 @@ open class PreferenceConnector {
         const val DISTRICT_ID = "com.nativework.covid19vaccinetracker.DISTRICT_ID"
         const val LAST_PERIODIC_TIME = "com.nativework.covid19vaccinetracker.LAST_PERIODIC_TIME"
         const val SAVED_PREF = "com.nativework.covid19vaccinetracker.SAVED_PREF"
+        const val IS_LOWER_GROUP = "com.nativework.covid19vaccinetracker.IS_LOWER_GROUP_L"
+        const val IS_UPPER_GROUP = "com.nativework.covid19vaccinetracker.IS_UPPER_GROUP"
+        const val IS_ALL_GROUP = "com.nativework.covid19vaccinetracker.IS_ALL_GROUP"
 
         private const val PREF_NAME = "Covid19"
         private const val MODE = Context.MODE_PRIVATE

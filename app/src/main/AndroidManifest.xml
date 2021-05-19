@@ -4,6 +4,14 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <queries>
+        <package android:name="com.cowinapp.app" />
+
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+        </intent>
+    </queries>
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -12,16 +20,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Covid19VaccineTracker">
-        <activity android:name=".ui.center.CenterActivity"></activity>
-        <activity android:name=".MainActivity"/>
-        <activity android:name=".ui.HomeActivity"
-            android:launchMode="singleTop">
+        <activity android:name=".ui.SplashActivity"
+            android:theme="@style/Theme.Covid19VaccineTracker.NoActionBar"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.center.CenterActivity" />
+        <activity android:name=".MainActivity" />
+        <activity
+            android:name=".ui.HomeActivity"
+            android:launchMode="singleTop">
+        </activity>
+        <activity android:name=".ui.center.VaccineCenterActivity" />
 
         <meta-data
             android:name="preloaded_fonts"

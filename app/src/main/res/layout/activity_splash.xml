@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.SplashActivity">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="COVID-19\nVaccine Tracker"
+        android:textAlignment="center"
+        android:textColor="@color/design_default_color_primary"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/subTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Notifies the vaccine availability in your area"
+        android:textAlignment="center"
+        android:padding="8dp"
+        android:textColor="@color/teal_700"
+        android:layout_below="@id/title"
+        android:textSize="14sp"
+        android:visibility="visible" />
+
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_above="@id/title"
+        android:layout_marginStart="-16dp"
+        android:layout_marginBottom="106dp"
+        android:layout_toEndOf="@+id/imgCoronaVirus"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_drugs" />
+
+    <ImageView
+        android:id="@+id/imgCoronaVirus"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_above="@id/title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="66dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_coronavirus" />
+
+    <ImageView
+        android:id="@+id/imgCalendar"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_above="@id/title"
+        android:layout_marginStart="-12dp"
+        android:layout_marginBottom="62dp"
+        android:layout_toEndOf="@id/imgCoronaVirus"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_schedule" />
+
+
+</RelativeLayout>

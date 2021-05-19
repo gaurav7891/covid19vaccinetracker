@@ -11,4 +11,7 @@ object Constants {
     const val STATE_ID = "com.nativework.covid19vaccinetracker.STATE_ID"
     const val REPEAT_INTERVAL:Long = 15
     const val FLEX_INTERVAL:Long = 5
+    const val CENTER_DETAILS = "com.nativework.covid19vaccinetracker.CENTER_DETAILS"
+    const val COWIN_PACKAGE_NAME = "com.cowinapp.app"
+    const val COWIN_PORTAL = "https://www.cowin.gov.in/home"
 }
