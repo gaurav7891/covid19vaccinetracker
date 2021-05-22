@@ -20,25 +20,18 @@ import java.util.*
 
 class CalenderByPincodeFragment : BaseFragment() {
 
-    private var _binding: FragmentPincodeCalenderBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentPincodeCalenderBinding
     private var viewModel: AppointmentViewModel? = null
     private var dateSelected: String? = null
-    private var pincode: Int? = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        binding = FragmentPincodeCalenderBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this).get(AppointmentViewModel::class.java)
-        _binding = FragmentPincodeCalenderBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
         return binding.root
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 
     companion object {
@@ -69,17 +62,18 @@ class CalenderByPincodeFragment : BaseFragment() {
             dateSelected = sdf.format(calendar.time)
         }
 
-        binding.edtPincode.setOnClickListener {
-            pincode = getPincode()
-        }
-
         binding.btnSearchByPin.setOnClickListener {
-            if (!dateSelected.isNullOrEmpty() && pincode == 0) {
-                dateSelected = getSelectedDate()
-                pincode = getPincode()
-                dateSelected?.let { it1 -> pincode?.let { it2 -> getAppointment(it2, it1) } }
+            val pincode = binding.edtPincode.text.toString()
+            if (pincode.isEmpty()) {
+                Toast.makeText(context, "Please enter the pincode to search", Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
             }
 
+            if (dateSelected.isNullOrEmpty()) {
+                dateSelected = getSelectedDate()
+            }
+            dateSelected?.let { it1 -> getAppointment(pincode.toInt(), it1) }
         }
     }
 
@@ -94,16 +88,6 @@ class CalenderByPincodeFragment : BaseFragment() {
         }
         val date = calendar.time.time
         binding.calendarView.minDate = date
-    }
-
-    private fun getPincode(): Int {
-        val pin: String = binding.edtPincode.text.trim().toString()
-        if (pin.isNotEmpty()) {
-            return pin.toInt()
-        } else {
-            Toast.makeText(context, "Enter pin code", Toast.LENGTH_SHORT).show()
-        }
-        return 0
     }
 
     private fun getSelectedDate(): String? {
@@ -126,13 +110,20 @@ class CalenderByPincodeFragment : BaseFragment() {
         }
 
         viewModel?.getCenterListData()?.observe(viewLifecycleOwner) {
-            if (it.size > 0) {
+            if (it.isNotEmpty()) {
                 val intent = Intent(context, CenterActivity::class.java)
                 intent.putParcelableArrayListExtra(Constants.INTENT_EXTRA_DATA, it)
                 startActivity(intent)
-            } else if (it.size == 0) {
-                Toast.makeText(context, "Empty/No Schedule found", Toast.LENGTH_LONG).show()
             }
+        }
+
+        viewModel?.isDataEmpty?.observe(viewLifecycleOwner) {
+            val tempCode = binding.edtPincode.text.toString().trim()
+            Toast.makeText(
+                context,
+                "No Schedule available for pincode $tempCode  on $dateSelected",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
