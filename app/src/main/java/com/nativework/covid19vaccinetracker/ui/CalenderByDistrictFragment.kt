@@ -331,6 +331,14 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
                 )
                 return true
             }
+            R.id.stop_notification -> {
+                activity?.let {
+                    WorkManager.getInstance(it)
+                        .cancelAllWorkByTag("vaccination-periodic-notification")
+                }
+                Toast.makeText(activity, "Notifications Disabled", Toast.LENGTH_SHORT).show()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
