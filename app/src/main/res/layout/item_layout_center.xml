@@ -70,10 +70,19 @@
                 android:textStyle="normal" />
 
             <TextView
-                android:id="@+id/txtPinCode"
+                android:id="@+id/txtVaccinePrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/txtCenterAddress"
+                android:layout_marginTop="4dp"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtPinCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txtVaccinePrice"
                 android:layout_marginTop="4dp"
                 android:inputType="number"
                 android:textSize="12sp"

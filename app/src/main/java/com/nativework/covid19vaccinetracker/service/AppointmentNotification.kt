@@ -113,7 +113,8 @@ class AppointmentNotification(private val context: Context, workerParameters: Wo
         notification.setStyle(
             NotificationCompat.BigTextStyle().bigText(
                 "The ${sessions.vaccine} vaccine is available " +
-                        "at ${center.name}. The current available capacity is ${sessions.available_capacity}." +
+                        "at ${center.name}. The current available capacity is ${sessions.available_capacity}. " +
+                        "The actual doses wise capacity is Dose 1: ${sessions.available_capacity_dose1} and Dose 2: ${sessions.available_capacity_dose2} " +
                         " Please confirm on CoWin portal to book your slot"
             )
         )

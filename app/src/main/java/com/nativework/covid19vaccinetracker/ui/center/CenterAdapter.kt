@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.models.Center
 import com.nativework.covid19vaccinetracker.models.Session
+import com.nativework.covid19vaccinetracker.models.VaccineFee
 
 class CenterAdapter(
     private val mContext: Context,
@@ -44,12 +45,22 @@ class CenterAdapter(
         private var txtPinCode: TextView = itemView.findViewById(R.id.txtPinCode)
         private var slotRecyclerView: RecyclerView = itemView.findViewById(R.id.slotRecyclerView)
         private var imgNotification: ImageView = itemView.findViewById(R.id.imgNotification)
+        private var txtVaccinePrice: TextView = itemView.findViewById(R.id.txtVaccinePrice)
 
 
         fun bind(center: Center) {
             txtCenterName.text = center.name
             txtCenterAddress.text = center.address
             txVaccinationType.text = center.fee_type
+            val vaccinesFeesList = center.vaccine_fees
+            if (!vaccinesFeesList.isNullOrEmpty()) {
+                val sb = StringBuffer()
+                for (vFees in vaccinesFeesList) {
+                    sb.append(vFees.vaccine + ": Rs." + vFees.fee + "\n")
+                }
+                txtVaccinePrice.text = sb.toString()
+
+            }
             txtPinCode.text = center.pincode.toString()
             adapter = SlotAdapter(mContext, center.sessions as ArrayList<Session>)
             slotRecyclerView.layoutManager = LinearLayoutManager(mContext)

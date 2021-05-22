@@ -34,6 +34,10 @@ RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private var txtAgeLimit: TextView = itemView.findViewById(R.id.txtAgeLimit)
         private var txtAvailableCapacity: TextView =
             itemView.findViewById(R.id.txtAvailableCapacity)
+        private var txtDoes1AvailableCapacity: TextView =
+            itemView.findViewById(R.id.txtDoes1AvailableCapacity)
+        private var txtDoes2AvailableCapacity: TextView =
+            itemView.findViewById(R.id.txtDoes2AvailableCapacity)
 
         private var sl1: TextView = itemView.findViewById(R.id.sl1)
         private var sl2: TextView = itemView.findViewById(R.id.sl2)
@@ -42,7 +46,10 @@ RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         fun bind(session: Session) {
             txtAgeLimit.text = "Age Limit: ${session.min_age_limit}"
-            txtAvailableCapacity.text = "Available Capacity: ${session.available_capacity}"
+            txtAvailableCapacity.text = "${session.available_capacity}"
+            txtDoes1AvailableCapacity.text = "${session.available_capacity_dose1}"
+            txtDoes2AvailableCapacity.text = "${session.available_capacity_dose2}"
+
             txtVaccineBrand.text = session.vaccine
             val slots = session.slots
             val slotsDetail = StringBuffer()
