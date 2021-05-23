@@ -23,6 +23,7 @@ open class PreferenceConnector {
         const val IS_LOWER_GROUP = "com.nativework.covid19vaccinetracker.IS_LOWER_GROUP_L"
         const val IS_UPPER_GROUP = "com.nativework.covid19vaccinetracker.IS_UPPER_GROUP"
         const val IS_ALL_GROUP = "com.nativework.covid19vaccinetracker.IS_ALL_GROUP"
+        const val PINCODE = "com.nativework.covid19vaccinetracker.PINCODE"
 
         private const val PREF_NAME = "Covid19"
         private const val MODE = Context.MODE_PRIVATE

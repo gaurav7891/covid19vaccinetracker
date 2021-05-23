@@ -2,10 +2,9 @@ package com.nativework.covid19vaccinetracker.networks
 
 import com.nativework.covid19vaccinetracker.models.*
 import com.nativework.covid19vaccinetracker.models.locality.DistrictList
-import com.nativework.covid19vaccinetracker.models.*
+import com.nativework.covid19vaccinetracker.models.appointment.AppointmentResponse
 import io.reactivex.Single
 import retrofit2.Call
-import java.util.*
 
 /**
  * This class represents implementation of the all APIs which is declared in the NetworkService interface
@@ -41,6 +40,10 @@ class NetworkServiceImpl(private val mNetworkService: NetworkService) : NetworkS
         date: String
     ): Single<AppointmentResponse> {
         return mNetworkService.getAppointmentByPincodeAndDate(pincode,date)
+    }
+
+    override fun getCenterListFromPinCode(pincode: Int, date: String): Call<AppointmentResponse> {
+       return mNetworkService.getCenterListFromPinCode(pincode, date)
     }
 
 

@@ -4,16 +4,17 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.nativework.covid19vaccinetracker.R
 import com.nativework.covid19vaccinetracker.models.SavedPreferences
+import com.nativework.covid19vaccinetracker.utils.Constants
 
 class RecentSearchAdapter(
     private val mContext: Context,
     private val list: ArrayList<SavedPreferences>,
-    private val listener:OnClickListener
+    private val listener: OnClickListener
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -36,20 +37,25 @@ class RecentSearchAdapter(
 
     inner class RecentSearchViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val txtState: TextView = itemView.findViewById(R.id.txtState)
-        private val txtDistrict: TextView = itemView.findViewById(R.id.txtDistrict)
-        private val imgForward: ImageView = itemView.findViewById(R.id.imgForward)
-
-        fun bind(center: SavedPreferences) {
-            txtDistrict.text = center.district
-            txtState.text = center.state
-            imgForward.setOnClickListener {
+        private val txtTitle: TextView = itemView.findViewById(R.id.txtTitle)
+        private val txtSubTitle: TextView = itemView.findViewById(R.id.txtSubTitle)
+        private val cardView: CardView = itemView.findViewById(R.id.cardView)
+        fun bind(center: SavedPreferences?) {
+            if (center?.type == Constants.SEARCH_BY_DISTRICT) {
+                txtSubTitle.text = center.district
+                txtTitle.text = center.state
+            }
+            if (center?.type == Constants.SEARCH_BY_PINCODE) {
+                txtTitle.text = center.pinCode
+                txtSubTitle.text = "PINCODE"
+            }
+            cardView.setOnClickListener {
                 listener.onImageClick(center)
             }
         }
     }
 
-    interface OnClickListener{
-        fun onImageClick(center: SavedPreferences)
+    interface OnClickListener {
+        fun onImageClick(center: SavedPreferences?)
     }
 }

@@ -2,7 +2,6 @@ package com.nativework.covid19vaccinetracker.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
@@ -19,7 +18,6 @@ import com.nativework.covid19vaccinetracker.models.SavedPreferences
 import com.nativework.covid19vaccinetracker.models.locality.District
 import com.nativework.covid19vaccinetracker.models.locality.StatesList
 import com.nativework.covid19vaccinetracker.service.AppointmentNotification
-import com.nativework.covid19vaccinetracker.ui.appointment.CalenderByPincodeFragment
 import com.nativework.covid19vaccinetracker.ui.center.CenterActivity
 import com.nativework.covid19vaccinetracker.ui.home.AutocompleteAdapter
 import com.nativework.covid19vaccinetracker.ui.home.RecentSearchAdapter
@@ -44,6 +42,7 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
     private var districtStringList = ArrayList<String>()
     private var districtId: String? = null
     private var dateSelected: String? = null
+    private var pinCode: String? = null
     private var stateId: String? = null
     private var recentAdapter: RecentSearchAdapter? = null
     private var isLowerGroup: Boolean = false
@@ -58,6 +57,7 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         binding = FragmentDistrictCalenderBinding.inflate(layoutInflater)
         val view = binding.root
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
@@ -68,6 +68,7 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
         super.onViewCreated(view, savedInstanceState)
         (activity as BaseApp).setToolbarTitle("Search Vaccine Centers")
         (activity as BaseApp).setToolbarBackButton(false)
+        showDistrictSearchOption()
         setListeners()
         initData()
         setObservers()
@@ -117,49 +118,91 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
         }
 
         binding.btnSearch.setOnClickListener {
-            val state = binding.autoTextState.text.toString()
-            val district = binding.autoTextDistrict.text.toString()
-            if (!isPreferenceSelected()) {
-                Toast.makeText(
-                    activity,
-                    "Please select the notification preference",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
+            if (binding.autoTextDistrict.visibility == View.VISIBLE && binding.autoTextState.visibility == View.VISIBLE) {
+                val state = binding.autoTextState.text.toString()
+                val district = binding.autoTextDistrict.text.toString()
+                if (!isPreferenceSelected()) {
+                    Toast.makeText(
+                        activity,
+                        "Please select the notification preference",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+                if (state.isEmpty()) {
+                    Toast.makeText(
+                        activity,
+                        "Select your state from dropdown for search",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                    return@setOnClickListener
+                }
+                if (district.isEmpty()) {
+                    Toast.makeText(
+                        activity,
+                        "Invalid district in the state selected",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+                if (dateSelected.isNullOrEmpty()) {
+                    dateSelected = getSelectedDate()
+                }
+                AppUtils.saveSelectedSearch(
+                    requireContext(),
+                    Constants.SEARCH_BY_DISTRICT,
+                    state,
+                    district,
+                    dateSelected,
+                    districtId,
+                    stateId,
+                    null
+                )
+                Timber.d(
+                    "Notification preference selected from checkbox is Lower = %s, Upper = %s",
+                    isLowerGroup,
+                    isUpperGroup
+                )
+                getCentersAvailable(state, district, dateSelected)
             }
-            if (state.isEmpty()) {
-                Toast.makeText(activity, "Select your state from dropdown for search", Toast.LENGTH_SHORT)
-                    .show()
-                return@setOnClickListener
+
+            if (binding.edtPincode.visibility == View.VISIBLE) {
+                if (dateSelected.isNullOrEmpty()) {
+                    dateSelected = getSelectedDate()
+                }
+                pinCode = binding.edtPincode.text.toString()
+                if (pinCode.isNullOrEmpty() || pinCode!!.length > 6) {
+                    Toast.makeText(context, "Enter the valid pin code", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                if (!isPreferenceSelected()) {
+                    Toast.makeText(
+                        activity,
+                        "Please select the notification preference",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+
+                AppUtils.saveSelectedSearch(
+                    requireContext(),
+                    Constants.SEARCH_BY_PINCODE,
+                    null,
+                    null,
+                    dateSelected,
+                    null,
+                    null,
+                    pinCode
+                )
+
+                pinCode?.let {
+                    getCentersByPinCode(dateSelected, it)
+                }
             }
-            if (district.isEmpty()) {
-                Toast.makeText(
-                    activity,
-                    "Invalid district in the state selected",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
-            }
-            if (dateSelected.isNullOrEmpty()) {
-                dateSelected = getSelectedDate()
-            }
-            AppUtils.saveSelectedSearch(
-                requireContext(),
-                state,
-                district,
-                dateSelected,
-                districtId,
-                stateId
-            )
-            Timber.d(
-                "Notification preference selected from checkbox is Lower = %s, Upper = %s",
-                isLowerGroup,
-                isUpperGroup
-            )
-            getCentersAvailable(state, district, dateSelected)
         }
 
-        binding.calendarView.setOnDateChangeListener { calendarView, year, month, dayOfMonth ->
+        binding.calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.ROOT)
             val calendar = Calendar.getInstance()
             calendar.set(Calendar.YEAR, year)
@@ -167,6 +210,10 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             dateSelected = sdf.format(calendar.time)
         }
+    }
+
+    private fun getCentersByPinCode(dateSelected: String?, pinCode: String) {
+        dateSelected?.let { viewModel?.getAppointmentByPinCodeAndDate(pinCode.toInt(), it) }
     }
 
     private fun isPreferenceSelected(): Boolean {
@@ -221,9 +268,12 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
         val type: Type = object : TypeToken<ArrayList<SavedPreferences>>() {}.type
         val model = Gson().fromJson<ArrayList<SavedPreferences>>(jsonString, type)
         if (model != null) {
+            binding.textView.visibility = View.VISIBLE
             recentAdapter = RecentSearchAdapter(requireContext(), model, this)
             binding.recentSearchRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             binding.recentSearchRecyclerView.adapter = recentAdapter
+        }else{
+            binding.textView.visibility = View.GONE
         }
     }
 
@@ -255,10 +305,12 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
                 //save the notification preference
                 AppUtils.saveNotificationPref(activity, isLowerGroup, isUpperGroup)
                 Timber.d("isLower %s isUpperGroup %s", isLowerGroup, isUpperGroup)
-                setNotification(districtId)
+                setNotification(districtId, pinCode)
                 Timber.d("District ID: %s", districtId)
+                Timber.d("Pincode ID: %s", pinCode)
                 val intent = Intent(context, CenterActivity::class.java)
                 intent.putExtra(Constants.DISTRICT_ID, districtId)
+                intent.putExtra(Constants.PINCODE, pinCode)
                 intent.putExtra(Constants.STATE_ID, stateId)
                 intent.putParcelableArrayListExtra(Constants.INTENT_EXTRA_DATA, it)
                 startActivity(intent)
@@ -266,7 +318,7 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
         }
     }
 
-    private fun setNotification(districtId: String?) {
+    private fun setNotification(districtId: String?, pinCode: String?) {
         if (districtId != null) {
             activity?.let {
                 PreferenceConnector.writeString(
@@ -276,8 +328,18 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
                 )
             }
         }
+        if (pinCode != null) {
+            activity?.let {
+                PreferenceConnector.writeString(
+                    it,
+                    PreferenceConnector.PINCODE,
+                    pinCode
+                )
+            }
+        }
         val data = Data.Builder()
         data.putString(Constants.DISTRICT_ID, districtId)
+        data.putString(Constants.PINCODE, pinCode)
         val periodWork = PeriodicWorkRequest.Builder(
             AppointmentNotification::class.java,
             Constants.REPEAT_INTERVAL,
@@ -310,27 +372,48 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
         return list
     }
 
-    override fun onImageClick(center: SavedPreferences) {
-        center.districtId?.let {
-            center.date?.let { it1 ->
-                viewModel?.getCalendarByDistrict(
-                    it,
-                    it1
-                )
+    override fun onImageClick(savedPref: SavedPreferences?) {
+        savedPref?.let {
+            if (savedPref.type == Constants.SEARCH_BY_DISTRICT) {
+                savedPref.districtId?.let { it1 ->
+                    savedPref.date?.let { it2 ->
+                        viewModel?.getCalendarByDistrict(
+                            it1,
+                            it2
+                        )
+                    }
+                }
+            }
+
+            if (savedPref.type == Constants.SEARCH_BY_PINCODE) {
+                savedPref.pinCode?.toInt()?.let { it1 ->
+                    savedPref.date?.let { it2 ->
+                        viewModel?.getAppointmentByPinCodeAndDate(
+                            it1, it2
+                        )
+                    }
+                }
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        activity?.menuInflater?.inflate(R.menu.main_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when (item.itemId) {
             R.id.menu_searchByPin -> {
-                (activity as BaseApp).loadFragment(
-                    CalenderByPincodeFragment.newInstance(),
-                    R.id.home_container
-                )
+                showPinCodeSearchOption()
                 return true
             }
+            R.id.menu_searchByDistrict -> {
+                showDistrictSearchOption()
+                return true
+            }
+
             R.id.stop_notification -> {
                 activity?.let {
                     WorkManager.getInstance(it)
@@ -343,9 +426,15 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        val menuDistrict = menu.findItem(R.id.menu_searchByDistrict)
-        menuDistrict.isEnabled = false
-        return
+    private fun showDistrictSearchOption() {
+        binding.autoTextDistrict.visibility = View.VISIBLE
+        binding.autoTextState.visibility = View.VISIBLE
+        binding.edtPincode.visibility = View.GONE
+    }
+
+    private fun showPinCodeSearchOption() {
+        binding.autoTextDistrict.visibility = View.GONE
+        binding.autoTextState.visibility = View.GONE
+        binding.edtPincode.visibility = View.VISIBLE
     }
 }
