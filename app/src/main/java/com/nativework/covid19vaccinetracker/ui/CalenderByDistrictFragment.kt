@@ -430,11 +430,13 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
         binding.autoTextDistrict.visibility = View.VISIBLE
         binding.autoTextState.visibility = View.VISIBLE
         binding.edtPincode.visibility = View.GONE
+        binding.txtMessage.text = getString(R.string.please_search_the_available_centers_for_vaccine_by_district)
     }
 
     private fun showPinCodeSearchOption() {
         binding.autoTextDistrict.visibility = View.GONE
         binding.autoTextState.visibility = View.GONE
         binding.edtPincode.visibility = View.VISIBLE
+        binding.txtMessage.text = getString(R.string.please_search_the_available_centers_for_vaccine_by_pin_code)
     }
 }
