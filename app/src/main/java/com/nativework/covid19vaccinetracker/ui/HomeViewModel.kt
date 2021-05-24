@@ -21,6 +21,7 @@ open class HomeViewModel : BaseViewModel() {
     private var repository: HomeRepository
     var districtList = SingleLiveEvent<ArrayList<District>>()
     var centersList = SingleLiveEvent<ArrayList<Center>>()
+    var emptyListMessage = SingleLiveEvent<String>()
 
     init {
         DaggerInit.getDeps().inject(this)
@@ -57,6 +58,10 @@ open class HomeViewModel : BaseViewModel() {
         return centersList
     }
 
+    fun getEmptyListMessage():LiveData<String>{
+        return emptyListMessage
+    }
+
     fun getCalendarByDistrict(districtId: String, date: String) {
         repository.getCalendarByDistrict(
             districtId,
@@ -71,6 +76,8 @@ open class HomeViewModel : BaseViewModel() {
                     showProgress.value = false
                     if (t.centers?.size!! > 0) {
                         centersList.setValue(t.centers as ArrayList<Center>)
+                    }else{
+                        emptyListMessage.setValue("No centers available")
                     }
                 }
 
@@ -94,6 +101,8 @@ open class HomeViewModel : BaseViewModel() {
                     showProgress.value = false
                     if (t.centers?.size!! > 0) {
                         centersList.setValue(t.centers as java.util.ArrayList<Center>)
+                    }else{
+                        emptyListMessage.setValue("No centers available")
                     }
 
                 }

@@ -30,7 +30,7 @@
                     android:layout_weight="1.5"
                     android:text="PHCU maha ajskdha"
                     android:layout_gravity="center|center_vertical"
-                    android:textColor="@color/black"
+                    android:textColor="?android:textColorPrimary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -67,6 +67,7 @@
                 android:layout_below="@id/linLayCenterDetails"
                 android:layout_marginTop="4dp"
                 android:textSize="12sp"
+                android:textColor="?android:textColorPrimary"
                 android:textStyle="normal" />
 
             <TextView
@@ -74,6 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/txtCenterAddress"
+                android:textColor="?android:textColorPrimary"
                 android:layout_marginTop="4dp"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -85,6 +87,7 @@
                 android:layout_below="@id/txtVaccinePrice"
                 android:layout_marginTop="4dp"
                 android:inputType="number"
+                android:textColor="?android:textColorPrimary"
                 android:textSize="12sp"
                 android:textStyle="normal"
                 android:visibility="gone" />
@@ -94,6 +97,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/txtPinCode"
+                android:textColor="?android:textColorPrimary"
                 android:layout_marginTop="8dp"
                 android:text="Slots"
                 android:textSize="12sp" />

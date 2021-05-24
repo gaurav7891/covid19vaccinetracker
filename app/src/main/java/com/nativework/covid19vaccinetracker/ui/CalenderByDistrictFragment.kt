@@ -76,11 +76,6 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
 
     private fun setListeners() {
         binding.autoTextState.setOnItemClickListener { adapterView, _, position, _ ->
-            Toast.makeText(
-                context,
-                adapterView.getItemAtPosition(position) as String,
-                Toast.LENGTH_SHORT
-            ).show()
             val itemSelected = adapterView.getItemAtPosition(position)
             var stateId = ""
             for (state in statesList!!) {
@@ -94,12 +89,6 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
         }
 
         binding.autoTextDistrict.setOnItemClickListener { adapterView, _, position, _ ->
-            Toast.makeText(
-                context,
-                adapterView.getItemAtPosition(position) as String,
-                Toast.LENGTH_SHORT
-            ).show()
-
             val itemSelected = adapterView.getItemAtPosition(position)
             for (d in districtList) {
                 if (itemSelected.equals(d.district_name)) {
@@ -221,11 +210,6 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
     }
 
     private fun getCentersAvailable(state: String, district: String, dateSelected: String?) {
-        Toast.makeText(
-            context,
-            dateSelected,
-            Toast.LENGTH_SHORT
-        ).show()
         if (dateSelected != null) {
             districtId?.let { viewModel?.getCalendarByDistrict(it, dateSelected) }
         }
@@ -314,8 +298,13 @@ class CalenderByDistrictFragment : BaseFragment(), RecentSearchAdapter.OnClickLi
                 intent.putExtra(Constants.STATE_ID, stateId)
                 intent.putParcelableArrayListExtra(Constants.INTENT_EXTRA_DATA, it)
                 startActivity(intent)
+            }else{
+                Toast.makeText(activity, "No centers available", Toast.LENGTH_SHORT).show()
             }
         }
+        viewModel?.emptyListMessage?.observe(viewLifecycleOwner, {
+            Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+        })
     }
 
     private fun setNotification(districtId: String?, pinCode: String?) {

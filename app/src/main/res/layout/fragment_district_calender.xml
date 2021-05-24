@@ -46,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/age_limit"
-                    android:textColor="@color/black" />
+                    android:textColor="?android:textColorPrimary" />
 
                 <androidx.appcompat.widget.AppCompatCheckBox
                     android:id="@+id/checkBoxLowerGroup"

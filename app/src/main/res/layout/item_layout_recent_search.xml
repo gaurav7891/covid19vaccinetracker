@@ -22,9 +22,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:textColor="@color/black"
                 android:textSize="14sp"
-                android:textStyle="normal" />
+                android:textColor="?android:textColorPrimary"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txtSubTitle"
@@ -33,6 +33,7 @@
                 android:layout_below="@id/txtTitle"
                 android:layout_marginTop="4dp"
                 android:textSize="12sp"
+                android:textColor="?android:textColorPrimary"
                 android:textStyle="normal"
                 android:visibility="visible" />
 
