@@ -4,4 +4,12 @@
     <string name="search">Search</string>
     <string name="please_search_the_available_centers_for_vaccine_by_pin_code">Please search the available centers for vaccine by Pin code</string>
     <string name="search_by_district">Search by District</string>
+    <string name="please_search_the_available_centers_for_vaccine_by_district">Please search the available centers for vaccine by District</string>
+    <string name="notification_preference">Notification Preference</string>
+    <string name="age_limit">Age Limit</string>
+    <string name="_18_44">18 – 44</string>
+    <string name="_45">45+</string>
+    <string name="select_your_state">Select your State</string>
+    <string name="select_your_district">Select your District</string>
+    <string name="recent_search">Recent Search</string>
 </resources>

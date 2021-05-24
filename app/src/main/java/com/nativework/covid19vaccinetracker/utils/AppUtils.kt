@@ -62,21 +62,24 @@ object AppUtils {
 
     fun saveSelectedSearch(
         context: Context,
-        state: String,
-        district: String,
+        type:String?,
+        state: String?,
+        district: String?,
         dateSelected: String?,
         districtId: String?,
-        stateId: String?
+        stateId: String?,
+        pinCode:String?
     ) {
         val listOfPref = ArrayList<SavedPreferences>()
         listOfPref.add(
             SavedPreferences(
-                "SearchByDistrict",
+                type,
                 districtId,
                 district,
                 stateId,
                 state,
-                dateSelected
+                dateSelected,
+                pinCode
             )
         )
         val json = Gson().toJson(listOfPref)

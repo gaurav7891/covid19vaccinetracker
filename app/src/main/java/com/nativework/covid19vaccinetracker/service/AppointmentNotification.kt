@@ -18,7 +18,6 @@ import com.nativework.covid19vaccinetracker.models.Center
 import com.nativework.covid19vaccinetracker.models.Session
 import com.nativework.covid19vaccinetracker.networks.NetworkModule
 import com.nativework.covid19vaccinetracker.networks.NetworkService
-import com.nativework.covid19vaccinetracker.ui.HomeActivity
 import com.nativework.covid19vaccinetracker.ui.center.VaccineCenterActivity
 import com.nativework.covid19vaccinetracker.utils.AppUtils
 import com.nativework.covid19vaccinetracker.utils.Constants
@@ -32,11 +31,16 @@ class AppointmentNotification(private val context: Context, workerParameters: Wo
     Worker(context, workerParameters) {
     override fun doWork(): Result {
         val data = inputData.getString(Constants.DISTRICT_ID)
+        val pinCodeData = inputData.getString(Constants.PINCODE)
         val groupPref = AppUtils.readNotificationPref(context)
         Timber.d("Age limit preference %s", groupPref)
         Timber.d("data is received as districtID %s", data)
+        Timber.d("data is received as PINCODE %s", pinCodeData)
         val districtID: String =
             data ?: PreferenceConnector.readString(context, PreferenceConnector.DISTRICT_ID, "")
+        val pinCode: String =
+            pinCodeData ?: PreferenceConnector.readString(context, PreferenceConnector.PINCODE, "")
+
         if (districtID.isNotEmpty()) {
             // check for vaccine availability
             val networkModule = NetworkModule(applicationContext.cacheDir, context)
@@ -79,10 +83,62 @@ class AppointmentNotification(private val context: Context, workerParameters: Wo
             } else {
                 return Result.retry()
             }
+        }else{
+           return searchByPinCode(pinCode, groupPref)
         }
         return Result.success()
     }
 
+    // Search the available centers from pincode
+    private fun searchByPinCode(pinCode: String, groupPref: String):Result{
+
+        if (pinCode.isNotEmpty()) {
+            // check for vaccine availability
+            val networkModule = NetworkModule(applicationContext.cacheDir, context)
+            val retrofitInstance = networkModule.provideCall().create(NetworkService::class.java)
+            val call =
+                retrofitInstance.getCenterListFromPinCode(pinCode.toInt(), AppUtils.getCurrentDate())
+            val response = call.execute()
+            if (response.isSuccessful) {
+                Timber.d("Retrofit api called for pincode %s", response)
+                val listOfCenters = response.body()?.centers
+                if (!listOfCenters.isNullOrEmpty()) {
+                    for (center in listOfCenters) {
+                        val sessionsList = center.sessions
+                        if (!sessionsList.isNullOrEmpty()) {
+                            for (sessions in sessionsList) {
+                                if (sessions.available_capacity!! > 0) {
+                                    when (groupPref) {
+                                        AgeGroups.ALL_GROUP.name -> {
+                                            showNotification(center, sessions)
+                                            return Result.success()
+                                        }
+                                        AgeGroups.AGE_18_44.name -> {
+                                            if (sessions.min_age_limit == 18) {
+                                                showNotification(center, sessions)
+                                                return Result.success()
+                                            }
+                                        }
+                                        AgeGroups.AGE_45_ALL.name -> {
+                                            if (sessions.min_age_limit == 45) {
+                                                showNotification(center, sessions)
+                                                return Result.success()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                return Result.retry()
+            }
+        }
+        return Result.success()
+    }
+
+    // Show the notification based on the centers available
     private fun showNotification(center: Center, sessions: Session) {
         val intent = Intent(context, VaccineCenterActivity::class.java).apply {
             putExtra(Constants.CENTER_DETAILS, center)

@@ -14,4 +14,7 @@ object Constants {
     const val CENTER_DETAILS = "com.nativework.covid19vaccinetracker.CENTER_DETAILS"
     const val COWIN_PACKAGE_NAME = "com.cowinapp.app"
     const val COWIN_PORTAL = "https://www.cowin.gov.in/home"
+    const val PINCODE = "com.nativework.covid19vaccinetracker.PINCODE"
+    const val SEARCH_BY_DISTRICT = "com.nativework.covid19vaccinetracker.SEARCH_BY_DISTRICT"
+    const val SEARCH_BY_PINCODE = "com.nativework.covid19vaccinetracker.SEARCH_BY_PINCODE"
 }

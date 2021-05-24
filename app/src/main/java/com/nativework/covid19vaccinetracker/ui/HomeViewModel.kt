@@ -1,10 +1,10 @@
 package com.nativework.covid19vaccinetracker.ui
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.nativework.covid19vaccinetracker.base.BaseViewModel
 import com.nativework.covid19vaccinetracker.base.SingleLiveEvent
 import com.nativework.covid19vaccinetracker.deps.DaggerInit
+import com.nativework.covid19vaccinetracker.models.appointment.AppointmentResponse
 import com.nativework.covid19vaccinetracker.models.Center
 import com.nativework.covid19vaccinetracker.models.GetCalendarByDistrictResponse
 import com.nativework.covid19vaccinetracker.models.locality.District
@@ -79,6 +79,29 @@ open class HomeViewModel : BaseViewModel() {
                     errorMessage.value = e
                 }
 
+            })
+    }
+
+    fun getAppointmentByPinCodeAndDate(pinCode:Int ,date: String){
+        repository.getAppointmentByPinCodeAndDate(pinCode, date,
+            object : SingleObserver<AppointmentResponse> {
+                override fun onSubscribe(d: Disposable) {
+                    showProgress.value = true
+                    compositeDisposable?.add(d)
+                }
+
+                override fun onSuccess(t: AppointmentResponse) {
+                    showProgress.value = false
+                    if (t.centers?.size!! > 0) {
+                        centersList.setValue(t.centers as java.util.ArrayList<Center>)
+                    }
+
+                }
+
+                override fun onError(e: Throwable) {
+                    showProgress.value = false
+                    errorMessage.value = e
+                }
             })
     }
 }

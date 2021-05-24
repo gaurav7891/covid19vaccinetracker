@@ -6,5 +6,6 @@ data class SavedPreferences(
     val district: String?,
     val stateId: String?,
     val state: String?,
-    val date: String?
+    val date: String?,
+    val pinCode:String?
 )
