@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VaccineTracker</string>
+    <string name="app_name">Covid-19 Vaccine Tracker</string>
     <string name="enter_pincode">Enter Pincode</string>
     <string name="search">Search</string>
     <string name="please_search_the_available_centers_for_vaccine_by_pin_code">Please search the available centers for vaccine by Pin code</string>
