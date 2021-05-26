@@ -52,6 +52,7 @@
                     android:id="@+id/checkBoxLowerGroup"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:buttonTint="?android:textColorPrimary"
                     android:layout_weight="1"
                     android:text="@string/_18_44" />
 
@@ -59,6 +60,7 @@
                     android:id="@+id/checkBoxUpperGroup"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:buttonTint="?android:textColorPrimary"
                     android:layout_weight="1"
                     android:text="@string/_45" />
             </LinearLayout>
@@ -70,6 +72,7 @@
             android:id="@+id/edtPincode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/linLayPref"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
@@ -78,8 +81,7 @@
             android:hint="@string/enter_pincode"
             android:inputType="number"
             android:maxLength="6"
-            android:layout_below="@id/linLayPref"
-            />
+            android:minHeight="48dp" />
 
         <AutoCompleteTextView
             android:id="@+id/autoTextState"
@@ -91,7 +93,8 @@
             android:layout_marginEnd="16dp"
             android:hint="@string/select_your_state"
             android:imeOptions="actionSearch"
-            android:inputType="textAutoComplete" />
+            android:inputType="textAutoComplete"
+            android:minHeight="48dp" />
 
         <AutoCompleteTextView
             android:id="@+id/autoTextDistrict"
@@ -103,7 +106,8 @@
             android:layout_marginEnd="16dp"
             android:hint="@string/select_your_district"
             android:imeOptions="actionSearch"
-            android:inputType="textAutoComplete" />
+            android:inputType="textAutoComplete"
+            android:minHeight="48dp" />
 
 
         <CalendarView
@@ -111,6 +115,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/autoTextDistrict"
+            android:contentDescription="@string/calendar"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp" />
@@ -140,6 +145,7 @@
             android:layout_height="100dp"
             android:layout_below="@+id/textView"
             android:layout_marginStart="16dp"
+            android:contentDescription="@string/recent_search"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp" />
 

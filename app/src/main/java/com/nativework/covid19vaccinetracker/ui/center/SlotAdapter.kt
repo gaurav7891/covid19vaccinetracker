@@ -55,7 +55,7 @@ RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             val slotsDetail = StringBuffer()
             if (slots?.size!! > 0){
                 for (s in slots){
-                    slotsDetail.append(" $s")
+                    slotsDetail.append("$s\n")
                 }
                 sl1.text = slotsDetail.toString()
             }else{
